@@ -1,0 +1,1 @@
+java -cp ~/project/konveyor/konveyor.tooling/target/konveyor.tooling-0.0.1.jar net.sf.saxon.Transform -xsl:write.xslt -s:../ai.xml
