@@ -1,0 +1,2 @@
+for i in $(find src -type f); do echo '<file name="'$i'">'; cat $i; echo '</file>'; done >target/now.xml
+xclip -in target/now.xml

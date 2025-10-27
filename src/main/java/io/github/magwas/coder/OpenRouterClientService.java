@@ -10,47 +10,39 @@ import java.net.http.HttpResponse;
 
 @Service
 public class OpenRouterClientService {
-    @Autowired private OpenRouterConversationService conversationService;
     @Autowired private OpenRouterRequestService requestService;
     @Autowired private OpenRouterResponseService responseService;
     @Autowired private ConfigComponent configComponent;
+    @Autowired private ConversationAddMessageService conversationAddMessageService;
+    @Autowired private ConversationGetMessagesService conversationGetMessagesService;
     
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
     public String apply(String question) {
         try {
-            conversationService.addMessage(new RequestMessageData("user", question));
+            conversationAddMessageService.apply(new RequestMessageData("user", question));
             
-            String requestBody = requestService.createRequestBody(conversationService.getMessages());
+            String requestBody = requestService.apply(conversationGetMessagesService.apply());
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(OpenRouterClientConstants.API_URL))
-                .header("Authorization", configComponent.loadApiKey())
-                .header("Content-Type", "application/json")
+                .header(HTTPConstants.AUTHORIZATION, configComponent.loadApiKey())
+                .header(HTTPConstants.CONTENT_TYPE, HTTPConstants.APPLICATION_JSON)
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                 .build();
             
-System.out.println("asking");
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-System.out.println("response:"+response);
-System.out.println("body:"+response.body());
-            String result = responseService.processResponse(response.body());
             
-            conversationService.addMessage(new RequestMessageData("assistant", result));
-            return result;
+            if (response.statusCode() == HTTPConstants.HTTP_SUCCESS) {
+                String result = responseService.apply(response.body());
+                conversationAddMessageService.apply(new RequestMessageData("assistant", result));
+                return result;
+            } else {
+                return String.format(HTTPConstants.ERROR_TEMPLATE, 
+                    response.statusCode(), 
+                    response.body());
+            }
         } catch (Exception e) {
-            throw new RuntimeException("Error calling OpenRouter API", e);
+            throw new RuntimeException(ErrorMessages.API_ERROR, e);
         }
-    }
-    
-    public void clearHistory() {
-        conversationService.clear();
-    }
-    
-    public int getHistorySize() {
-        return conversationService.size();
-    }
-    
-    public boolean hasSystemInstructions() {
-        return !conversationService.getMessages()[0].content().isEmpty();
     }
 }

@@ -5,12 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 
 @Service
-public class OpenRouterResponseService {
+public class OpenRouterResponseService implements ErrorMessages, FormattingConstants {
     @Autowired private ObjectMapper objectMapper;
+    @Autowired private FileService fileService;
 
-    public String processResponse(String responseBody) throws JsonProcessingException {
+    public String apply(String responseBody) throws JsonProcessingException {
         OpenRouterResponseData response = objectMapper.readValue(responseBody, OpenRouterResponseData.class);
         StringBuilder result = new StringBuilder();
         
@@ -18,14 +20,17 @@ public class OpenRouterResponseService {
             MessageData message = response.choices()[0].message();
             if (message != null) {
                 if (message.reasoning() != null) {
-                    result.append(message.reasoning()).append("\n==============================\n\n");
+                    result.append(message.reasoning()).append(SECTION_DIVIDER);
                 }
                 if (message.content() != null) {
-                    result.append(message.content());
+                    try {
+                        fileService.apply(message.content());
+                    } catch (IOException e) {
+                        throw new RuntimeException(ErrorMessages.FILE_ERROR, e);
+                    }
                 }
             }
         }
-        
         return result.toString();
     }
 }

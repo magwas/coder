@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class OpenRouterRequestService {
     @Autowired private ObjectMapper objectMapper;
 
-    public String createRequestBody(RequestMessageData[] messages) throws JsonProcessingException {
+    public String apply(RequestMessageData[] messages) throws JsonProcessingException {
         return objectMapper.writeValueAsString(
             new RequestDataData(OpenRouterClientConstants.MODEL, messages));
     }
