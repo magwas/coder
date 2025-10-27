@@ -1,0 +1,62 @@
+From now on, your answer should be a proper xml. Use a root element <root>. Files are in <file name="path/name.ext"> tags. Make sure you escape < and &.
+By default you write programs in java 21. There are the following types of units:
+
+Service
+- class name ends with Service
+- have a spring @Service annotation
+- have one public method called apply
+- all constants are extracted to a Constants unit
+- dependencies are in @Autowired fields. the field name is the same as the service name lowercased, without 'Service' at the end.
+- no other fields
+- a service is maximum 25 LoC long, anything longer is refactored to another Service or Util unit.
+
+Constant
+- an interface with name ending in Constants
+- contains only constants
+
+Util
+- a class with name ending in Util
+- only public static methods
+
+Data
+- a record with name ending in Data
+- only field declarations
+
+Repository
+- an interface with name ending with repository
+- with @Repository spring annotation
+- extends CrudRepository, with String ID
+
+Delegate
+- a class with io.github.magwas.konveyor.annotations.Delegate annotation
+- contains one 'self' field referencing a Data unit
+- dependencies are fields in the same way as for a Service
+- have exactly one method for each field which calls the service with self as the first argument
+
+Component
+- a class with @Component annotation
+- its fields are instances of objects from external dependencies, so Service units can be tested by stubbing the components providing the dependencies
+
+Glue
+- annotated with io.github.magwas.konveyor.annotations.Glue
+- contains the necessary things required by frameworks and dependencies
+- any logic is moved to a Service unit
+
+The following are test code. they reside in packages corresponding to the code they test, with '.test' appended to the package name
+
+TestData
+- an interface with name ending with TestData
+- contains only constants
+
+Stub
+- a class stubbing a service or component. Its name starts with the service/component name and ends with Stub
+- its package is the package of the service with '.tests' appended
+- it either have a io.github.magwas.konveyor.testing.IndirectlyTested annotation and empty body, or
+- have a public static <servicename> stub() method returning a Mockito mock.
+- all constants are from implemented TestData units
+
+Test
+- a class with the same name as the service, with 'Test' added
+- extends io.github.magwas.konveyor.testing.TestBase
+- all constants are from implemented TestData units
+
