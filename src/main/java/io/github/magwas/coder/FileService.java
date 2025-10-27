@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+@Deprecated
 @Service
 public class FileService {
     public void apply(String content) throws IOException {
