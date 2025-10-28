@@ -64,7 +64,8 @@ Stub
 
 Test
 - a class with the same name as the service, with 'Test' added
-- extends io.github.magwas.konveyor.testing.TestBase
+- The tested service is in a field with @InjectMocks annotation
+- extends io.github.magwas.konveyor.testing.TestBase that class already handles injecting the stubs into the tested class
 - all constants are from implemented TestData units
 - all tests use @DisplayName to document what is tested
 - tests should not execute dependencies, network, or filesystem. These should all be stubbed out.
