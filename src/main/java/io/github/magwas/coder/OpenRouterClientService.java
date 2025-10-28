@@ -17,7 +17,7 @@ public class OpenRouterClientService {
 	private OpenRouterResponseService responseService;
 
 	@Autowired
-	private ConfigComponent configComponent;
+	private ConfigService configService;
 
 	@Autowired
 	private ConversationAddMessageService conversationAddMessageService;
@@ -39,7 +39,7 @@ public class OpenRouterClientService {
 
 			HttpRequest request = HttpRequest.newBuilder()
 					.uri(URI.create(OpenRouterClientConstants.API_URL))
-					.header(HTTPConstants.AUTHORIZATION, configComponent.loadApiKey())
+					.header(HTTPConstants.AUTHORIZATION, configService.loadApiKey())
 					.header(HTTPConstants.CONTENT_TYPE, HTTPConstants.APPLICATION_JSON)
 					.POST(HttpRequest.BodyPublishers.ofString(requestBody))
 					.build();
