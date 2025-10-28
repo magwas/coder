@@ -19,6 +19,9 @@ public class XMLFileWriterService {
 	@Autowired
 	private FileWriterService fileWriterService;
 
+	@Autowired
+	private FileDeletionService fileDeletionService;
+
 	public Void apply(String xmlContent) {
 		try {
 			Path currentDir = Paths.get("").toAbsolutePath();
@@ -39,6 +42,20 @@ public class XMLFileWriterService {
 				String content = fileElement.getTextContent();
 				fileWriterService.apply(absolutePath.toString(), XmlUtil.unescapeXml(content));
 			}
+
+			NodeList deletedNodes = doc.getElementsByTagName("deleted");
+			for (int i = 0; i < deletedNodes.getLength(); i++) {
+				Element deletedElement = (Element) deletedNodes.item(i);
+				String fileName = deletedElement.getAttribute("name");
+
+				Path absolutePath = currentDir.resolve(fileName).normalize();
+				if (!isPathAllowed(absolutePath, currentDir)) {
+					throw new RuntimeException(ErrorMessages.PATH_TRAVERSAL_ERROR);
+				}
+
+				fileDeletionService.apply(absolutePath.toString());
+			}
+
 			return null;
 		} catch (Exception e) {
 			throw new RuntimeException(ErrorMessages.FILE_ERROR, e);
