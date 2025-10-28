@@ -1,0 +1,13 @@
+package io.github.magwas.coder;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class DirectoryComponent {
+	public Path getCurrentDir() {
+		return Paths.get("").toAbsolutePath();
+	}
+}

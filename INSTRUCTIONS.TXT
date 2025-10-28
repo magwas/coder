@@ -76,7 +76,7 @@ TestData
 
 Stub
 - a class stubbing a service or component. Its name starts with the service/component name and ends with Stub
-- its package is the package of the service with '.tests' appended
+- its package is the package of the service with '.tests' appended. E.g. stubs for classes in io.github.magwas.coder should eb in io.github.magwas.coder.tests
 - it either have a io.github.magwas.konveyor.testing.IndirectlyTested annotation and empty body, or
 - have a public static <servicename> stub() method returning a Mockito mock.
 - all constants are from implemented TestData units

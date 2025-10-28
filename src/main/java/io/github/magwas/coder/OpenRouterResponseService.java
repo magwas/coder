@@ -1,9 +1,13 @@
 package io.github.magwas.coder;
 
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.xml.sax.SAXException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -17,7 +21,7 @@ public class OpenRouterResponseService implements ErrorMessages, FormattingConst
 	@Autowired
 	private FileWriterService fileWriterService;
 
-	public String apply(String responseBody) throws JsonProcessingException {
+	public String apply(String responseBody) throws IOException, ParserConfigurationException, SAXException {
 		OpenRouterResponseData response = objectMapper.readValue(responseBody, OpenRouterResponseData.class);
 		StringBuilder result = new StringBuilder();
 
