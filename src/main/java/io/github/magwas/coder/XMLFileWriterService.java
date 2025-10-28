@@ -1,6 +1,7 @@
 
 package io.github.magwas.coder;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.xml.sax.InputSource;
 import org.w3c.dom.Document;
@@ -8,16 +9,18 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.IOException;
 import java.io.StringReader;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.Paths;
 
 @Service
-public class XMLFileWriterService implements ErrorMessages {
+public class XMLFileWriterService {
+    @Autowired 
+    private FileWriterService fileWriterService;
+
     public Void apply(String xmlContent) {
         try {
+            Path currentDir = Paths.get("").toAbsolutePath();
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(new InputSource(new StringReader(xmlContent)));
@@ -26,18 +29,22 @@ public class XMLFileWriterService implements ErrorMessages {
             for (int i = 0; i < fileNodes.getLength(); i++) {
                 Element fileElement = (Element) fileNodes.item(i);
                 String fileName = fileElement.getAttribute("name");
+                
+                Path absolutePath = currentDir.resolve(fileName).normalize();
+                if (!isPathAllowed(absolutePath, currentDir)) {
+                    throw new RuntimeException(ErrorMessages.PATH_TRAVERSAL_ERROR);
+                }
+                
                 String content = fileElement.getTextContent();
-                writeFile(fileName, XmlUtil.unescapeXml(content));
+                fileWriterService.apply(absolutePath.toString(), XmlUtil.unescapeXml(content));
             }
+            return null;
         } catch (Exception e) {
             throw new RuntimeException(ErrorMessages.FILE_ERROR, e);
         }
-        return null;
     }
-
-    private void writeFile(String fileName, String content) throws IOException {
-        Path path = Path.of(fileName);
-        Files.createDirectories(path.getParent());
-        Files.writeString(path, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+    
+    private static boolean isPathAllowed(Path path, Path currentDir) {
+        return path.toString().startsWith(currentDir.normalize().toString());
     }
 }

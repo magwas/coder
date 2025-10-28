@@ -61,6 +61,7 @@ public class CoderApplication implements CommandLineRunner {
             System.out.println(openRouterClientService.apply(question));
         } catch (Exception e) {
             System.out.println(UIConstants.ERROR_PREFIX + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

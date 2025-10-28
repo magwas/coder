@@ -6,4 +6,5 @@ public interface ErrorMessages {
     String FILE_ERROR = "Error saving AI content";
     String API_ERROR = "Error calling OpenRouter API";
     String ERROR_TEMPLATE = "HTTP error %d: %s";
+    String PATH_TRAVERSAL_ERROR = "Path traversal attempt detected";
 }
