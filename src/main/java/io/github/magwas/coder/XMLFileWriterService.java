@@ -1,18 +1,10 @@
 package io.github.magwas.coder;
 
-import java.io.StringReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 @Service
 public class XMLFileWriterService {
@@ -25,34 +17,16 @@ public class XMLFileWriterService {
 	public Void apply(String xmlContent) {
 		try {
 			Path currentDir = Paths.get("").toAbsolutePath();
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document doc = builder.parse(new InputSource(new StringReader(xmlContent)));
 
-			NodeList fileNodes = doc.getElementsByTagName("file");
-			for (int i = 0; i < fileNodes.getLength(); i++) {
-				Element fileElement = (Element) fileNodes.item(i);
-				String fileName = fileElement.getAttribute("name");
-
-				Path absolutePath = currentDir.resolve(fileName).normalize();
-				if (!isPathAllowed(absolutePath, currentDir)) {
-					throw new RuntimeException(ErrorMessages.PATH_TRAVERSAL_ERROR);
-				}
-
-				String content = fileElement.getTextContent();
-				fileWriterService.apply(absolutePath.toString(), XmlUtil.unescapeXml(content));
+			for (FileToWriteData file : XmlProcessingUtil.parseFilesToWrite(xmlContent)) {
+				Path absolutePath = currentDir.resolve(file.fileName()).normalize();
+				validatePath(absolutePath, currentDir);
+				fileWriterService.apply(absolutePath.toString(), XmlUtil.unescapeXml(file.content()));
 			}
 
-			NodeList deletedNodes = doc.getElementsByTagName("deleted");
-			for (int i = 0; i < deletedNodes.getLength(); i++) {
-				Element deletedElement = (Element) deletedNodes.item(i);
-				String fileName = deletedElement.getAttribute("name");
-
-				Path absolutePath = currentDir.resolve(fileName).normalize();
-				if (!isPathAllowed(absolutePath, currentDir)) {
-					throw new RuntimeException(ErrorMessages.PATH_TRAVERSAL_ERROR);
-				}
-
+			for (FileToDeleteData file : XmlProcessingUtil.parseFilesToDelete(xmlContent)) {
+				Path absolutePath = currentDir.resolve(file.fileName()).normalize();
+				validatePath(absolutePath, currentDir);
 				fileDeletionService.apply(absolutePath.toString());
 			}
 
@@ -62,7 +36,9 @@ public class XMLFileWriterService {
 		}
 	}
 
-	private static boolean isPathAllowed(Path path, Path currentDir) {
-		return path.toString().startsWith(currentDir.normalize().toString());
+	private void validatePath(Path path, Path currentDir) {
+		if (!PathUtil.isPathAllowed(path, currentDir)) {
+			throw new RuntimeException(ErrorMessages.PATH_TRAVERSAL_ERROR);
+		}
 	}
 }
