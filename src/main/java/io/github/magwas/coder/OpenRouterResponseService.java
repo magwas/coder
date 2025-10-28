@@ -14,6 +14,9 @@ public class OpenRouterResponseService implements ErrorMessages, FormattingConst
 	@Autowired
 	private XMLFileWriterService xmlFileWriterService;
 
+	@Autowired
+	private FileWriterService fileWriterService;
+
 	public String apply(String responseBody) throws JsonProcessingException {
 		OpenRouterResponseData response = objectMapper.readValue(responseBody, OpenRouterResponseData.class);
 		StringBuilder result = new StringBuilder();
@@ -25,6 +28,7 @@ public class OpenRouterResponseService implements ErrorMessages, FormattingConst
 					result.append(message.reasoning()).append(SECTION_DIVIDER);
 				}
 				if (message.content() != null) {
+					fileWriterService.apply("target/ai.xml", message.content());
 					xmlFileWriterService.apply(message.content());
 				}
 			}

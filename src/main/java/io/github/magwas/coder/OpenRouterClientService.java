@@ -25,6 +25,9 @@ public class OpenRouterClientService {
 	@Autowired
 	private ConversationGetMessagesService conversationGetMessagesService;
 
+	@Autowired
+	private FileWriterService fileWriterService;
+
 	private final HttpClient httpClient = HttpClient.newHttpClient();
 
 	public String apply(String question) {
@@ -32,6 +35,8 @@ public class OpenRouterClientService {
 			conversationAddMessageService.apply(new RequestMessageData("user", question));
 
 			String requestBody = requestService.apply(conversationGetMessagesService.apply());
+			fileWriterService.apply("target/request.dump", requestBody);
+
 			HttpRequest request = HttpRequest.newBuilder()
 					.uri(URI.create(OpenRouterClientConstants.API_URL))
 					.header(HTTPConstants.AUTHORIZATION, configComponent.loadApiKey())
@@ -40,6 +45,7 @@ public class OpenRouterClientService {
 					.build();
 
 			HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+			fileWriterService.apply("target/response.dump", response.body());
 
 			if (response.statusCode() == HTTPConstants.HTTP_SUCCESS) {
 				String result = responseService.apply(response.body());
