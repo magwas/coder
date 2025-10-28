@@ -1,10 +1,12 @@
 package io.github.magwas.coder;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ConversationSetupService {
+public class ConversationSetupService implements ConfigConstants {
 	@Autowired
 	private SystemInstructionsService systemInstructionsService;
 
@@ -12,15 +14,20 @@ public class ConversationSetupService {
 	private SourceCodeReaderService sourceCodeReaderService;
 
 	@Autowired
-	private ConversationStateComponent conversationStateComponent;
+	private ConversationStateRepository conversationStateRepository;
 
 	public Void apply() {
 		String instructions = systemInstructionsService.apply();
 		String sourceCode = sourceCodeReaderService.apply();
-		conversationStateComponent.hasSystemInstructions = !instructions.isEmpty();
-		conversationStateComponent.systemMessage = createSystemMessage(instructions, sourceCode);
-		conversationStateComponent.conversationHistory.add(
-				new RequestMessageData("system", conversationStateComponent.systemMessage));
+		boolean hasSystemInstructions = !instructions.isEmpty();
+		String systemMessage = createSystemMessage(instructions, sourceCode);
+
+		ArrayList<RequestMessageData> history = new ArrayList<>();
+		history.add(new RequestMessageData("system", systemMessage));
+
+		conversationStateRepository.save(
+				new ConversationStateData(STATE_ID, history, systemMessage, hasSystemInstructions));
+
 		return null;
 	}
 
@@ -35,4 +42,6 @@ public class ConversationSetupService {
 		systemPrompt += "\nCurrent code:\n" + sourceCode;
 		return systemPrompt;
 	}
+
+	private static final String STATE_ID = "current-state";
 }

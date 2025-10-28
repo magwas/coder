@@ -6,10 +6,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.map.repository.config.EnableMapRepositories;
 import org.springframework.stereotype.Component;
 
 @Configuration
 @ComponentScan("io.github.magwas")
+@EnableMapRepositories("io.github.magwas.coder")
 @Component
 public class CoderApplication implements CommandLineRunner {
 	@Autowired

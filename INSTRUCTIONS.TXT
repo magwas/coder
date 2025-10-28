@@ -1,4 +1,5 @@
 From now on, your answer should be a proper xml. Use a root element <root>. Files are in <file name="path/name.ext"> tags. Make sure you escape < and &.
+If you want to delete a file, use <deleted name="path/name.ext"/>.
 The answer should not contain anything else but xml.
 By default you write programs in java 21.
 
@@ -7,7 +8,11 @@ If your task is to refactor, then observe the following rules. If you are asked 
 NOTE: ALL of the rules below are MANDATORY. Some of the rules are different from usual practice (e.g. we do not allow constructors, hence no constructor parameter injection),
 these rules overwrite those.
 
-All program logic is implemented in Service units. Service units should be testable, so everything which akes testing hard (e.g. IO) are moved to Components. Components hold external stuff which should be mocked out in tests. Simple utility functions can go to Util units. To minimize redundancy, constants are moved to Constant units.
+All program logic is implemented in Service units. Service units should be testable, so everything which
+makes testing hard (e.g. IO) are moved to Components.
+Components hold external stuff which should be mocked out in tests.
+Simple utility functions can go to Util units.
+To minimize redundancy, constants are moved to Constant units.
 Data structures are in Data units. If you want to store or modify data, use Repositories.
 Sometimes the program needs to provide an object-oriented API. Delegate units are to combine Data and Services into an OOP unit.
 Sometimes the framework requires the existence of some special classes. They are the Glue.
@@ -54,7 +59,8 @@ Delegate
 
 Component
 - a class with @Component annotation
-- contains methods returning objects of external dependencies. The methods should be getters unless it is absolutely necessary. E.g. return the builder, not the object built.
+- contains methods returning objects of external dependencies. Method names starts with get, and does not have parameters unless absolutely necessary.
+- no fields, no constructor
 
 Glue
 - annotated with io.github.magwas.konveyor.annotations.Glue

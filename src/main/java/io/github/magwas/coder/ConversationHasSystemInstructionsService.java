@@ -4,11 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ConversationHasSystemInstructionsService {
+public class ConversationHasSystemInstructionsService implements ConversationStateConstants {
 	@Autowired
-	private ConversationStateComponent conversationStateComponent;
+	private ConversationStateRepository conversationStateRepository;
 
 	public Boolean apply() {
-		return conversationStateComponent.hasSystemInstructions;
+		return conversationStateRepository
+				.findById(STATE_ID)
+				.orElseThrow(() -> new IllegalStateException("Conversation not initialized"))
+				.hasSystemInstructions();
 	}
 }

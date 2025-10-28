@@ -4,11 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ConversationGetMessagesService {
+public class ConversationGetMessagesService implements ConversationStateConstants {
 	@Autowired
-	private ConversationStateComponent conversationStateComponent;
+	private ConversationStateRepository conversationStateRepository;
 
 	public RequestMessageData[] apply() {
-		return conversationStateComponent.conversationHistory.toArray(new RequestMessageData[0]);
+		return conversationStateRepository
+				.findById(STATE_ID)
+				.orElseThrow(() -> new IllegalStateException("Conversation not initialized"))
+				.conversationHistory()
+				.toArray(new RequestMessageData[0]);
 	}
 }

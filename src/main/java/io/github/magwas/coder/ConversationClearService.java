@@ -1,17 +1,23 @@
 package io.github.magwas.coder;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ConversationClearService {
 	@Autowired
-	private ConversationStateComponent conversationStateComponent;
+	private ConversationStateRepository conversationStateRepository;
 
 	public Void apply() {
-		conversationStateComponent.conversationHistory.clear();
-		conversationStateComponent.conversationHistory.add(
-				new RequestMessageData("system", conversationStateComponent.systemMessage));
+		var state = conversationStateRepository
+				.findById(ConversationStateData.SINGLETON_ID)
+				.orElseGet(() ->
+						new ConversationStateData(ConversationStateData.SINGLETON_ID, new ArrayList<>(), "", false));
+		state = new ConversationStateData(
+				ConversationStateData.SINGLETON_ID, new ArrayList<>(), state.systemMessage(), false);
+		conversationStateRepository.save(state);
 		return null;
 	}
 }

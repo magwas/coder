@@ -4,17 +4,14 @@ import java.io.IOException;
 
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class LineReaderComponent {
-	@Autowired
-	private TerminalComponent terminalComponent;
-
 	public final LineReader getLineReader() throws IOException {
-		return LineReaderBuilder.builder()
-				.terminal(terminalComponent.getTerminal())
-				.build();
+		Terminal terminal = TerminalBuilder.builder().system(true).build();
+		return LineReaderBuilder.builder().terminal(terminal).build();
 	}
 }
