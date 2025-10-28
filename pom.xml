@@ -1,60 +1,104 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.magwas</groupId>
+        <artifactId>konveyor.parent</artifactId>
+        <version>0.5.7</version>
+    </parent>
+    <artifactId>coder</artifactId>
+    <version>0.0.1</version>
+    <packaging>jar</packaging>
+    <name>${project.artifactId}</name>
+    <description>Coder
 
-  <groupId>io.github.magwas</groupId>
-  <artifactId>coder</artifactId>
-  <version>1.0.0</version>
-  <packaging>jar</packaging>
-
-  <name>Coder</name>
-  <description>OpenRouter AI Client with Spring Boot</description>
-
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.2.5</version>
-    <relativePath/>
-  </parent>
-
-  <properties>
-    <maven.compiler.source>21</maven.compiler.source>
-    <maven.compiler.target>21</maven.compiler.target>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jackson.version>2.15.2</jackson.version>
-    <jline.version>3.25.1</jline.version>
-  </properties>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jline</groupId>
-      <artifactId>jline</artifactId>
-      <version>${jline.version}</version>
-    </dependency>
-  </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
+                Vibe coding app</description>
+    <url>https://github.com/magwas/coder.git</url>
+    <licenses>
+        <license>
+            <name>GPL affero</name>
+            <url>https://www.gnu.org/licenses/agpl-3.0.en.html</url>
+            <comments>GNU Affero General Public License</comments>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Árpád Magosányi</name>
+            <email>m4gw4s@gmail.com</email>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:https://github.com/magwas/coder.git</connection>
+        <developerConnection>scm:git:https://github.com/magwas/coder.git</developerConnection>
+        <url>https://github.com/magwas/coder.git</url>
+    </scm>
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/magwas/coder/issues</url>
+    </issueManagement>
+    <distributionManagement>
+        <site>
+            <id>website</id>
+            <name>Project site</name>
+            <url>https://repo.kdea.hu/${project.artifactId}</url>
+        </site>
+    </distributionManagement>
+    <properties>
+        <jackson.version>2.15.2</jackson.version>
+        <jline.version>3.25.1</jline.version>
+        <mainClass>io.github.magwas.coder.CoderApplication</mainClass>
+        <version.konveyor>0.5.7</version.konveyor>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jline</groupId>
+            <artifactId>jline</artifactId>
+            <version>${jline.version}</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>${mainClass}</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptors>
+                                <descriptor>assembly/executable.xml</descriptor>
+                            </descriptors>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -1,6 +1,3 @@
-
 package io.github.magwas.coder;
 
-public record ChoiceData(
-    MessageData message
-) {}
+public record ChoiceData(MessageData message) {}
