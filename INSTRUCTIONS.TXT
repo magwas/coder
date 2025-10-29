@@ -65,8 +65,8 @@ Component
 Glue
 - annotated with io.github.magwas.konveyor.annotations.Glue
 - contains the necessary things required by frameworks and dependencies
-- any logic is moved to a Service unit
 - for code which does not fit other categories
+- Glue should not contain business logic. never touch a glue unless specifically instructed.
 
 The following are test code. they reside in packages corresponding to the code they test, with '.test' appended to the package name
 
