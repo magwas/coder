@@ -4,13 +4,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.nio.file.Paths;
+import java.util.List;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
 import io.github.magwas.coder.DirectoryComponent;
+import io.github.magwas.coder.ErrorMessages;
 import io.github.magwas.coder.FileDeletionService;
 import io.github.magwas.coder.FileWriterService;
+import io.github.magwas.coder.ProcessedFilesData;
 import io.github.magwas.coder.XMLFileWriterService;
 import io.github.magwas.konveyor.testing.TestBase;
 import io.github.magwas.konveyor.testing.TestUtil;
@@ -27,10 +31,12 @@ public class XMLFileWriterServiceTest extends TestBase implements XMLFileWriterT
 		DirectoryComponent dirComponent = TestUtil.dependency(underTest, DirectoryComponent.class);
 
 		when(dirComponent.getCurrentDir()).thenReturn(Paths.get(CURRENT_DIR));
-		underTest.apply(VALID_XML_WITH_FILES);
+		ProcessedFilesData result = underTest.apply(VALID_XML_WITH_FILES);
 
 		verify(fileWriter).apply(Paths.get(CURRENT_DIR, FILE_NAME_1).toString(), CONTENT_1);
 		verify(fileWriter).apply(Paths.get(CURRENT_DIR, FILE_NAME_2).toString(), CONTENT_2);
+		assertIterableEquals(List.of(FILE_NAME_1, FILE_NAME_2), result.modifiedFiles());
+		assertTrue(result.deletedFiles().isEmpty());
 		verifyNoInteractions(TestUtil.dependency(underTest, FileDeletionService.class));
 	}
 
@@ -41,10 +47,12 @@ public class XMLFileWriterServiceTest extends TestBase implements XMLFileWriterT
 		DirectoryComponent dirComponent = TestUtil.dependency(underTest, DirectoryComponent.class);
 
 		when(dirComponent.getCurrentDir()).thenReturn(Paths.get(CURRENT_DIR));
-		underTest.apply(VALID_XML_WITH_DELETIONS);
+		ProcessedFilesData result = underTest.apply(VALID_XML_WITH_DELETIONS);
 
 		verify(fileDeletion).apply(Paths.get(CURRENT_DIR, FILE_NAME_1).toString());
 		verify(fileDeletion).apply(Paths.get(CURRENT_DIR, FILE_NAME_2).toString());
+		assertIterableEquals(List.of(FILE_NAME_1, FILE_NAME_2), result.deletedFiles());
+		assertTrue(result.modifiedFiles().isEmpty());
 		verifyNoInteractions(TestUtil.dependency(underTest, FileWriterService.class));
 	}
 
@@ -56,7 +64,7 @@ public class XMLFileWriterServiceTest extends TestBase implements XMLFileWriterT
 		when(dirComponent.getCurrentDir()).thenReturn(Paths.get(CURRENT_DIR));
 		Exception e = assertThrows(RuntimeException.class, () -> underTest.apply(XML_WITH_PATH_TRAVERSAL));
 
-		assertEquals("Path traversal attempt detected", e.getMessage());
+		assertEquals(ErrorMessages.PATH_TRAVERSAL_ERROR, e.getMessage());
 		verifyNoInteractions(TestUtil.dependency(underTest, FileWriterService.class));
 		verifyNoInteractions(TestUtil.dependency(underTest, FileDeletionService.class));
 	}

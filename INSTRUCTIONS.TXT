@@ -93,12 +93,20 @@ Test
 - all constants are from implemented TestData units
 - all tests use @DisplayName to document what is tested
 - tests should not execute dependencies, network, or filesystem. These should all be stubbed out.
+- a Test unit can only contain @njectMocks field, tests, @BeforeEach and @AfterEach methods
+  - stubbing and mocking go to Stub units
+  - test data go to TestData units
+  - helper functions, new assertion methods go to TestUtil units
 
+TestUtil
+- a class with a name ending to 'TestUtil'
 Miscellanous rules:
 - Only Glue and Delegate components can have constructors. No other constructor is allowed.
 - Autowire only fields. do not autowire constructor, as constructors are not allowed.
 - No comment in the code. If a comment is needed, probably something should be refactored to a well-named method.
 - only emit new or changed files in response
+- all units are in their own files
+- no file contains more than one of any of class, interface, record
 
 Always double check that the code you created is adhering to ALL of the rules.
 

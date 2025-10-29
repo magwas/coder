@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class OpenRouterResponseService implements ErrorMessages, FormattingConstants {
 	@Autowired
-	private ObjectMapper objectMapper;
+	private ObjectMapperComponent objectMapperComponent;
 
 	@Autowired
 	private XMLFileWriterService xmlFileWriterService;
@@ -22,7 +22,8 @@ public class OpenRouterResponseService implements ErrorMessages, FormattingConst
 	private FileWriterService fileWriterService;
 
 	public String apply(String responseBody) throws IOException, ParserConfigurationException, SAXException {
-		OpenRouterResponseData response = objectMapper.readValue(responseBody, OpenRouterResponseData.class);
+		ObjectMapper mapper = objectMapperComponent.getObjectMapper();
+		OpenRouterResponseData response = mapper.readValue(responseBody, OpenRouterResponseData.class);
 		StringBuilder result = new StringBuilder();
 
 		if (response.choices() != null && response.choices().length > 0) {
@@ -33,10 +34,26 @@ public class OpenRouterResponseService implements ErrorMessages, FormattingConst
 				}
 				if (message.content() != null) {
 					fileWriterService.apply("target/ai.xml", message.content());
-					xmlFileWriterService.apply(message.content());
+					ProcessedFilesData processedFiles = xmlFileWriterService.apply(message.content());
+					result.append(formatFileChanges(processedFiles));
 				}
 			}
 		}
 		return result.toString();
+	}
+
+	private String formatFileChanges(ProcessedFilesData processedFiles) {
+		StringBuilder sb = new StringBuilder();
+		if (!processedFiles.modifiedFiles().isEmpty()) {
+			sb.append("Modified files:\n");
+			processedFiles
+					.modifiedFiles()
+					.forEach(f -> sb.append("- ").append(f).append("\n"));
+		}
+		if (!processedFiles.deletedFiles().isEmpty()) {
+			sb.append("Deleted files:\n");
+			processedFiles.deletedFiles().forEach(f -> sb.append("- ").append(f).append("\n"));
+		}
+		return sb.toString();
 	}
 }
