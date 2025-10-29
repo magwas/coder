@@ -1,5 +1,6 @@
 package io.github.magwas.coder;
 
+import org.jline.reader.LineReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
@@ -32,6 +33,9 @@ public class CoderApplication implements CommandLineRunner {
 	@Autowired
 	private ConversationSetupService conversationSetupService;
 
+	@Autowired
+	private LineReaderComponent lineReaderComponent;
+
 	public static void main(String[] args) throws Exception {
 		ApplicationContext springContext = new AnnotationConfigApplicationContext(
 				CoderApplication.class, com.fasterxml.jackson.databind.ObjectMapper.class);
@@ -41,11 +45,12 @@ public class CoderApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+		LineReader lineReader = lineReaderComponent.getLineReader();
 		System.out.println(UIConstants.PROMPT_MESSAGE);
 		conversationSetupService.apply();
 
 		while (true) {
-			String userInput = consoleInputService.apply();
+			String userInput = consoleInputService.apply(lineReader);
 			if (userInput == null) break;
 			if (userInput.isEmpty()) continue;
 

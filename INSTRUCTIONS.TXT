@@ -107,6 +107,7 @@ Miscellanous rules:
 - only emit new or changed files in response
 - all units are in their own files
 - no file contains more than one of any of class, interface, record
+- never create spring configuration classes or spring beans unless specifically instructed
 
 Always double check that the code you created is adhering to ALL of the rules.
 
