@@ -25,13 +25,13 @@ public class MainLoopService implements UIConstants {
 	private ConversationSetupService conversationSetupService;
 
 	@Autowired
-	private LineReaderComponent lineReaderComponent;
+	private LineReaderDependency lineReaderDependency;
 
 	@Autowired
 	private SystemDependency systemDependency;
 
 	public Void apply() throws Exception {
-		LineReader lineReader = lineReaderComponent.getLineReader();
+		LineReader lineReader = lineReaderDependency.lineReader;
 		systemDependency.println.accept(PROMPT_MESSAGE);
 		conversationSetupService.apply();
 

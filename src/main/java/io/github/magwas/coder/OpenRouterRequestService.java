@@ -14,6 +14,6 @@ public class OpenRouterRequestService {
 		return objectMapperComponent
 				.getObjectMapper()
 				.writeValueAsString(
-						new RequestDataData(OpenRouterClientConstants.MODEL, messages, new ReasoningData("true")));
+						new RequestDataData(OpenRouterClientConstants.MODEL, messages, new ReasoningData(true)));
 	}
 }
