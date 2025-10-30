@@ -32,14 +32,14 @@ public class MainLoopService implements UIConstants {
 
 	public Void apply() throws Exception {
 		LineReader lineReader = lineReaderComponent.getLineReader();
-		systemDependency.println(PROMPT_MESSAGE);
+		systemDependency.println.accept(PROMPT_MESSAGE);
 		conversationSetupService.apply();
 
 		while (true) {
 			String userInput = consoleInputService.apply(lineReader);
 			if (userInput == null) break;
 			if (userInput.isEmpty()) continue;
-
+			systemDependency.println.accept(GOT_INPUT);
 			switch (userInput.toLowerCase()) {
 				case CommandConstants.CMD_CLEAR -> handleClear();
 				case CommandConstants.CMD_HISTORY -> handleHistory();
@@ -47,30 +47,30 @@ public class MainLoopService implements UIConstants {
 				default -> handleQuestion(userInput);
 			}
 		}
-		systemDependency.println(GOODBYE_MESSAGE);
-		systemDependency.exit(0);
+		systemDependency.println.accept(GOODBYE_MESSAGE);
+		systemDependency.exit.accept(0);
 		return null;
 	}
 
 	private void handleClear() {
 		conversationClearService.apply();
-		systemDependency.println(CLEAR_CONFIRMATION);
+		systemDependency.println.accept(CLEAR_CONFIRMATION);
 	}
 
 	private void handleHistory() {
-		systemDependency.println(HISTORY_MESSAGE + conversationSizeService.apply());
+		systemDependency.println.accept(HISTORY_MESSAGE + conversationSizeService.apply());
 	}
 
 	private void handleInstructions() {
-		systemDependency.println(INSTRUCTIONS_STATUS
+		systemDependency.println.accept(INSTRUCTIONS_STATUS
 				+ (conversationHasSystemInstructionsService.apply() ? INSTRUCTIONS_LOADED : INSTRUCTIONS_MISSING));
 	}
 
 	private void handleQuestion(String question) {
 		try {
-			systemDependency.println(openRouterClientService.apply(question));
+			systemDependency.println.accept(openRouterClientService.apply(question));
 		} catch (Exception e) {
-			systemDependency.println(ERROR_PREFIX + e.getMessage());
+			systemDependency.println.accept(ERROR_PREFIX + e.getMessage());
 			e.printStackTrace();
 		}
 	}

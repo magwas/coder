@@ -1,6 +1,8 @@
 package io.github.magwas.coder.tests;
 
-public interface MainLoopTestData {
+import io.github.magwas.coder.UIConstants;
+
+public interface MainLoopTestData extends UIConstants {
 	String EXIT_COMMAND_STATE = "exit";
 	String CLEAR_COMMAND_STATE = "clear";
 	String HISTORY_COMMAND_STATE = "history";

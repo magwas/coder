@@ -7,6 +7,7 @@ public interface UIConstants {
 			Conversation history maintained across requests
 			Commands: '/clear', '/exit', '/history', '/instructions'
 			Enter multiline input ending with '.'""";
+	String GOT_INPUT = "--- got it ---";
 	String GOODBYE_MESSAGE = "Goodbye!";
 	String INPUT_PROMPT = ">>> ";
 	String MULTILINE_END = ".";
