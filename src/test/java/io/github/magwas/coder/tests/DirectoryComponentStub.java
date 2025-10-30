@@ -1,11 +1,15 @@
 package io.github.magwas.coder.tests;
 
-import org.mockito.Mockito;
+import static org.mockito.Mockito.*;
+
+import java.nio.file.Paths;
 
 import io.github.magwas.coder.DirectoryComponent;
 
-public class DirectoryComponentStub {
+public class DirectoryComponentStub implements XMLFileWriterTestData {
 	public static DirectoryComponent stub() {
-		return Mockito.mock(DirectoryComponent.class);
+		DirectoryComponent mock = mock(DirectoryComponent.class);
+		when(mock.getCurrentDir()).thenReturn(Paths.get(CURRENT_DIR));
+		return mock;
 	}
 }

@@ -27,9 +27,12 @@ public class MainLoopService implements UIConstants {
 	@Autowired
 	private LineReaderComponent lineReaderComponent;
 
+	@Autowired
+	private SystemDependency systemDependency;
+
 	public Void apply() throws Exception {
 		LineReader lineReader = lineReaderComponent.getLineReader();
-		System.out.println(PROMPT_MESSAGE);
+		systemDependency.println(PROMPT_MESSAGE);
 		conversationSetupService.apply();
 
 		while (true) {
@@ -44,30 +47,30 @@ public class MainLoopService implements UIConstants {
 				default -> handleQuestion(userInput);
 			}
 		}
-		System.out.println(GOODBYE_MESSAGE);
-		System.exit(0);
+		systemDependency.println(GOODBYE_MESSAGE);
+		systemDependency.exit(0);
 		return null;
 	}
 
 	private void handleClear() {
 		conversationClearService.apply();
-		System.out.println(CLEAR_CONFIRMATION);
+		systemDependency.println(CLEAR_CONFIRMATION);
 	}
 
 	private void handleHistory() {
-		System.out.println(HISTORY_MESSAGE + conversationSizeService.apply());
+		systemDependency.println(HISTORY_MESSAGE + conversationSizeService.apply());
 	}
 
 	private void handleInstructions() {
-		System.out.println(INSTRUCTIONS_STATUS
+		systemDependency.println(INSTRUCTIONS_STATUS
 				+ (conversationHasSystemInstructionsService.apply() ? INSTRUCTIONS_LOADED : INSTRUCTIONS_MISSING));
 	}
 
 	private void handleQuestion(String question) {
 		try {
-			System.out.println(openRouterClientService.apply(question));
+			systemDependency.println(openRouterClientService.apply(question));
 		} catch (Exception e) {
-			System.out.println(ERROR_PREFIX + e.getMessage());
+			systemDependency.println(ERROR_PREFIX + e.getMessage());
 			e.printStackTrace();
 		}
 	}

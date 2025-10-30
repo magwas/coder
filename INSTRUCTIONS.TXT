@@ -89,7 +89,8 @@ Stub
 - a class stubbing a service or component. Its name starts with the service/component name and ends with Stub
 - its package is the package of the service with '.tests' appended. E.g. stubs for classes in io.github.magwas.coder should eb in io.github.magwas.coder.tests
 - it either have a io.github.magwas.konveyor.testing.IndirectlyTested annotation and empty body, or
-- have a public static <servicename> stub() method returning a Mockito mock. No other methods or constructor. No fields, except for inner mocks of Dependency stubs.
+ - have a public static <servicename> stub() method returning a Mockito mock. No other methods or constructor. No fields, except for inner mocks of Dependency stubs.
+- @IndirectlyTested stubs have no stub() method
 - all constants are from implemented TestData units
 - if the stub needs to return different values based on the same input based on the state of the environment,
   it should use TestBase.environmentState to figure out the correct answer.
@@ -103,6 +104,7 @@ Test
    that class already handles injecting the stubs into the tested class
    also contains public static String environmentState, which is initialized to null before each tests
    there is a void given(String newState) which sets environmentState to newState.
+- Use given() and environmentState in tests and stubs only if it is necessary.
 - all constants are from implemented TestData units
 - all tests use @DisplayName to document what is tested
 - tests should not execute dependencies, network, or filesystem. These should all be stubbed out.
@@ -110,6 +112,7 @@ Test
   - stubbing and mocking go to Stub units. no 'when' in tests
   - test data go to TestData units
   - helper functions, new assertion methods go to TestUtil units
+- TestBase.setUp() throws Throwable
 
 TestUtil
 - a class with a name ending to 'TestUtil'
