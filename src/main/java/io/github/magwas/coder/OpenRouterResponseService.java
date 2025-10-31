@@ -39,6 +39,15 @@ public class OpenRouterResponseService implements ErrorMessages, FormattingConst
 				}
 			}
 		}
+
+		if (response.usage() != null) {
+			result.append("\nToken usage: ")
+					.append(response.usage().prompt_tokens())
+					.append(" input, ")
+					.append(response.usage().completion_tokens())
+					.append(" output");
+		}
+
 		return result.toString();
 	}
 

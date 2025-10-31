@@ -8,6 +8,7 @@ import io.github.magwas.coder.ChoiceData;
 import io.github.magwas.coder.MessageData;
 import io.github.magwas.coder.ObjectMapperComponent;
 import io.github.magwas.coder.OpenRouterResponseData;
+import io.github.magwas.coder.UsageData;
 
 public class ObjectMapperComponentStub implements OpenRouterResponseTestData {
 	public static ObjectMapperComponent stub() {
@@ -16,7 +17,8 @@ public class ObjectMapperComponentStub implements OpenRouterResponseTestData {
 		try {
 			when(objectMapperMock.readValue(RESPONSE_BODY, OpenRouterResponseData.class))
 					.thenReturn(new OpenRouterResponseData(
-							new ChoiceData[] {new ChoiceData(new MessageData(REASONING, CONTENT))}));
+							new ChoiceData[] {new ChoiceData(new MessageData(REASONING, CONTENT))},
+							new UsageData(PROMPT_TOKENS, COMPLETION_TOKENS)));
 		} catch (Exception ignored) {
 		}
 		when(mock.getObjectMapper()).thenReturn(objectMapperMock);

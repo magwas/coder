@@ -21,7 +21,7 @@ public class OpenRouterResponseServiceTest extends TestBase implements OpenRoute
 	@DisplayName("Process valid response")
 	void testProcessValidResponse() throws Exception {
 		String result = underTest.apply(RESPONSE_BODY);
-		assertEquals(REASONING + FormattingConstants.SECTION_DIVIDER + FORMATTED_FILES, result);
+		assertEquals(REASONING + FormattingConstants.SECTION_DIVIDER + FORMATTED_FILES + TOKEN_USAGE, result);
 		verify(TestUtil.dependency(underTest, FileWriterService.class)).apply("target/ai.xml", CONTENT);
 	}
 }
