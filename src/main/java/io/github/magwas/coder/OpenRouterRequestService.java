@@ -10,10 +10,13 @@ public class OpenRouterRequestService {
 	@Autowired
 	private ObjectMapperComponent objectMapperComponent;
 
-	public String apply(RequestMessageData[] messages) throws JsonProcessingException {
+	@Autowired
+	private PersonalityService personalityService;
+
+	public String apply(String personalityName, RequestMessageData[] messages) throws JsonProcessingException {
+		PersonalityData personality = personalityService.apply(personalityName);
 		return objectMapperComponent
 				.getObjectMapper()
-				.writeValueAsString(
-						new RequestDataData(OpenRouterClientConstants.MODEL, messages, new ReasoningData(true)));
+				.writeValueAsString(new RequestDataData(personality.modelId(), messages, new ReasoningData(true)));
 	}
 }

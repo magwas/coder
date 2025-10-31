@@ -1,14 +1,15 @@
 package io.github.magwas.coder.tests;
 
+import static org.mockito.Mockito.*;
+
 import org.jline.reader.LineReader;
-import org.mockito.Mockito;
 
 import io.github.magwas.coder.LineReaderDependency;
 
 public class LineReaderDependencyStub {
 	public static LineReaderDependency stub() {
-		LineReaderDependency stub = Mockito.mock(LineReaderDependency.class);
-		stub.lineReader = Mockito.mock(LineReader.class);
-		return stub;
+		LineReaderDependency mock = mock(LineReaderDependency.class);
+		mock.lineReader = mock(LineReader.class);
+		return mock;
 	}
 }

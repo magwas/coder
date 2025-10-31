@@ -8,10 +8,7 @@ import java.nio.file.Paths;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SourceCodeReaderService {
-	private static final String SRC_MAIN_JAVA = "src/main/java";
-	private static final String SRC_TEST_JAVA = "src/test/java";
-
+public class SourceCodeReaderService implements SourceCodeReaderConstants {
 	public String apply() {
 		StringBuilder xml = new StringBuilder();
 		try {
@@ -43,7 +40,6 @@ public class SourceCodeReaderService {
 				.forEach(path -> {
 					try {
 						String content = Files.readString(path);
-						content = escapeXml(content);
 
 						// Ensure both paths are absolute before relativizing
 						Path absolutePath = path.toAbsolutePath();
@@ -69,13 +65,5 @@ public class SourceCodeReaderService {
 						System.err.println("Cannot read file: " + path);
 					}
 				});
-	}
-
-	private String escapeXml(String content) {
-		return content.replace("&", "&amp;")
-				.replace("<", "&lt;")
-				.replace(">", "&gt;")
-				.replace("\"", "&quot;")
-				.replace("'", "&apos;");
 	}
 }

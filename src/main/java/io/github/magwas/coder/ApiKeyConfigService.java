@@ -1,18 +1,17 @@
 package io.github.magwas.coder;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ApiKeyConfigService implements ConfigConstants, ErrorMessages {
-	public String apply() throws IOException {
-		Path keyFile = Path.of(API_KEY_PATH);
-		if (!Files.exists(keyFile)) {
-			throw new IOException(String.format(API_KEY_ERROR, keyFile));
+public class ApiKeyConfigService implements ErrorMessages {
+	@Autowired
+	private ConfigState configState;
+
+	public String apply() {
+		if (configState.configData == null) {
+			throw new IllegalStateException(ErrorMessages.API_KEY_ERROR);
 		}
-		return BEARER_PREFIX + Files.readString(keyFile).trim();
+		return "Bearer " + configState.configData.openrouterApiKey();
 	}
 }

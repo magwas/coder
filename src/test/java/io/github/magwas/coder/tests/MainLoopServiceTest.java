@@ -1,18 +1,22 @@
 package io.github.magwas.coder.tests;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import io.github.magwas.coder.ConfigLoadService;
 import io.github.magwas.coder.ConversationClearService;
 import io.github.magwas.coder.ConversationHasSystemInstructionsService;
 import io.github.magwas.coder.ConversationSizeService;
 import io.github.magwas.coder.MainLoopService;
 import io.github.magwas.coder.OpenRouterClientService;
+import io.github.magwas.coder.PersonalityData;
+import io.github.magwas.coder.PersonalityService;
 import io.github.magwas.coder.SystemExitSimulationException;
 import io.github.magwas.konveyor.testing.TestBase;
 
@@ -32,6 +36,20 @@ public class MainLoopServiceTest extends TestBase implements MainLoopTestData {
 
 	@Mock
 	private ConversationHasSystemInstructionsService conversationHasSystemInstructionsService;
+
+	@Mock
+	private ConfigLoadService configLoadService;
+
+	@Mock
+	private PersonalityService personalityService;
+
+	@BeforeEach
+	public void setUp() throws Throwable {
+		super.setUp();
+		doNothing().when(configLoadService).apply();
+		PersonalityData personality = new PersonalityData("coder", "model", "instructions.txt");
+		when(personalityService.apply("coder")).thenReturn(personality);
+	}
 
 	@Test
 	@DisplayName("Exit command terminates loop")
@@ -70,7 +88,7 @@ public class MainLoopServiceTest extends TestBase implements MainLoopTestData {
 	void testNormalInput() {
 		given(NORMAL_INPUT_STATE);
 		assertThrows(SystemExitSimulationException.class, () -> underTest.apply());
-		verify(openRouterClientService).apply(ANY_QUESTION);
+		verify(openRouterClientService).apply("coder", ANY_QUESTION);
 	}
 
 	@Test
@@ -78,7 +96,7 @@ public class MainLoopServiceTest extends TestBase implements MainLoopTestData {
 	void testProcessingError() {
 		given(ERROR_STATE);
 		assertThrows(SystemExitSimulationException.class, () -> underTest.apply());
-		verify(openRouterClientService).apply(ANY_QUESTION);
+		verify(openRouterClientService).apply("coder", ANY_QUESTION);
 		verify(SystemDependencyStub.printlnMock).accept(ERROR_PREFIX + "Simulated error");
 	}
 }

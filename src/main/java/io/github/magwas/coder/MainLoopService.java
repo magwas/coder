@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MainLoopService implements UIConstants {
+public class MainLoopService {
 	@Autowired
 	private OpenRouterClientService openRouterClientService;
 
@@ -30,47 +30,57 @@ public class MainLoopService implements UIConstants {
 	@Autowired
 	private SystemDependency systemDependency;
 
+	@Autowired
+	private ConfigLoadService configLoadService;
+
+	@Autowired
+	private PersonalityService personalityService;
+
 	public Void apply() throws Exception {
+		configLoadService.apply();
+		PersonalityData personality = personalityService.apply("coder");
+
 		LineReader lineReader = lineReaderDependency.lineReader;
-		systemDependency.println.accept(PROMPT_MESSAGE);
-		conversationSetupService.apply();
+		systemDependency.println.accept(
+				"OpenRouter AI Client with Spring Boot\nConversation history maintained across requests\nCommands: '/clear', '/exit', '/history', '/instructions'\nEnter multiline input ending with '.'");
+		conversationSetupService.apply(personality.name());
 
 		while (true) {
 			String userInput = consoleInputService.apply(lineReader);
 			if (userInput == null) break;
 			if (userInput.isEmpty()) continue;
-			systemDependency.println.accept(GOT_INPUT);
+			systemDependency.println.accept("--- got it ---");
 			switch (userInput.toLowerCase()) {
-				case CommandConstants.CMD_CLEAR -> handleClear();
-				case CommandConstants.CMD_HISTORY -> handleHistory();
-				case CommandConstants.CMD_INSTRUCTIONS -> handleInstructions();
-				default -> handleQuestion(userInput);
+				case "/clear" -> handleClear();
+				case "/history" -> handleHistory();
+				case "/instructions" -> handleInstructions();
+				default -> handleQuestion(personality.name(), userInput);
 			}
 		}
-		systemDependency.println.accept(GOODBYE_MESSAGE);
+		systemDependency.println.accept("Goodbye!");
 		systemDependency.exit.accept(0);
 		return null;
 	}
 
 	private void handleClear() {
 		conversationClearService.apply();
-		systemDependency.println.accept(CLEAR_CONFIRMATION);
+		systemDependency.println.accept("Conversation history cleared.");
 	}
 
 	private void handleHistory() {
-		systemDependency.println.accept(HISTORY_MESSAGE + conversationSizeService.apply());
+		systemDependency.println.accept("History messages: " + conversationSizeService.apply());
 	}
 
 	private void handleInstructions() {
-		systemDependency.println.accept(INSTRUCTIONS_STATUS
-				+ (conversationHasSystemInstructionsService.apply() ? INSTRUCTIONS_LOADED : INSTRUCTIONS_MISSING));
+		systemDependency.println.accept(
+				"System instructions: " + (conversationHasSystemInstructionsService.apply() ? "LOADED" : "NOT FOUND"));
 	}
 
-	private void handleQuestion(String question) {
+	private void handleQuestion(String personalityName, String question) {
 		try {
-			systemDependency.println.accept(openRouterClientService.apply(question));
+			systemDependency.println.accept(openRouterClientService.apply(personalityName, question));
 		} catch (Exception e) {
-			systemDependency.println.accept(ERROR_PREFIX + e.getMessage());
+			systemDependency.println.accept("Error: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}

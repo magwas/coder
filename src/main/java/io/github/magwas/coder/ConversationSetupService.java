@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ConversationSetupService implements ConfigConstants {
+public class ConversationSetupService implements ConversationStateConstants {
 	@Autowired
 	private SystemInstructionsService systemInstructionsService;
 
@@ -16,8 +16,11 @@ public class ConversationSetupService implements ConfigConstants {
 	@Autowired
 	private ConversationStateRepository conversationStateRepository;
 
-	public Void apply() {
-		String instructions = systemInstructionsService.apply();
+	@Autowired
+	private PersonalityService personalityService;
+
+	public Void apply(String personalityName) {
+		String instructions = systemInstructionsService.apply(personalityName);
 		String sourceCode = sourceCodeReaderService.apply();
 		boolean hasSystemInstructions = !instructions.isEmpty();
 		String systemMessage = createSystemMessage(instructions, sourceCode);
@@ -42,6 +45,4 @@ public class ConversationSetupService implements ConfigConstants {
 		systemPrompt += "\nCurrent code:\n" + sourceCode;
 		return systemPrompt;
 	}
-
-	private static final String STATE_ID = "current-state";
 }
