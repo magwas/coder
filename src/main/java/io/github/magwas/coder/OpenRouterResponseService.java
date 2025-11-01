@@ -34,7 +34,7 @@ public class OpenRouterResponseService implements ErrorMessages, FormattingConst
 					result.append(message.reasoning()).append(SECTION_DIVIDER);
 				}
 				if (message.content() != null) {
-					fileWriterService.apply("target/ai.xml", message.content());
+					fileWriterService.apply(FileConstants.AI_OUTPUT_PATH, message.content());
 					ProcessedFilesData processedFiles = xmlFileWriterService.apply(message.content());
 					result.append(formatFileChanges(processedFiles));
 				}
@@ -65,13 +65,13 @@ public class OpenRouterResponseService implements ErrorMessages, FormattingConst
 	private String formatFileChanges(ProcessedFilesData processedFiles) {
 		StringBuilder sb = new StringBuilder();
 		if (!processedFiles.modifiedFiles().isEmpty()) {
-			sb.append("Modified files:\n");
+			sb.append(MODIFIED_FILES_HEADER);
 			processedFiles
 					.modifiedFiles()
 					.forEach(f -> sb.append("- ").append(f).append("\n"));
 		}
 		if (!processedFiles.deletedFiles().isEmpty()) {
-			sb.append("Deleted files:\n");
+			sb.append(DELETED_FILES_HEADER);
 			processedFiles.deletedFiles().forEach(f -> sb.append("- ").append(f).append("\n"));
 		}
 		return sb.toString();

@@ -46,7 +46,7 @@ public class OpenRouterClientService implements ErrorMessages {
 			conversationAddMessageService.apply(new RequestMessageData("user", question));
 
 			String requestBody = requestService.apply(personalityName, conversationGetMessagesService.apply());
-			fileWriterService.apply("target/request.dump", requestBody);
+			fileWriterService.apply(FileConstants.REQUEST_DUMP_PATH, requestBody);
 
 			String authHeader = apiKeyConfigService.apply();
 
@@ -64,7 +64,7 @@ public class OpenRouterClientService implements ErrorMessages {
 			long endTime = timeDependency.currentTimeMillis();
 			long duration = endTime - startTime;
 
-			fileWriterService.apply("target/response.dump", response.body());
+			fileWriterService.apply(FileConstants.RESPONSE_DUMP_PATH, response.body());
 
 			if (response.statusCode() == 200) {
 				String result = responseService.apply(response.body(), duration);

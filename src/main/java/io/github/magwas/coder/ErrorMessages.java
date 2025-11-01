@@ -7,4 +7,7 @@ public interface ErrorMessages {
 	String ERROR_TEMPLATE = "HTTP error %d: %s";
 	String PATH_TRAVERSAL_ERROR = "Path traversal attempt detected";
 	String DELETION_ERROR = "Error deleting file";
+	String CONFIG_NOT_LOADED = "Config not loaded";
+	String PERSONALITY_NOT_FOUND = "Personality not found: %s";
+	String CONFIG_FILE_NOT_FOUND = "Config file not found: %s";
 }

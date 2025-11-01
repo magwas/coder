@@ -9,6 +9,7 @@ import io.github.magwas.coder.PersonalityService;
 import io.github.magwas.coder.RequestMessageData;
 import io.github.magwas.coder.SourceCodeReaderService;
 import io.github.magwas.coder.SystemInstructionsService;
+import io.github.magwas.coder.UIConstants;
 
 @Service
 public class ConversationSetupService implements ConversationStateConstants {
@@ -40,14 +41,11 @@ public class ConversationSetupService implements ConversationStateConstants {
 	}
 
 	private String createSystemMessage(String instructions, String sourceCode) {
-		String systemPrompt =
-				"From now on, your answer should be a proper xml. Use a root element <root>. Files are in <file name=\"path/name.ext\"> tags. Make sure you escape < and &.\n"
-						+ "The answer should not contain anything else but xml.\n"
-						+ "By default you write programs in java 21.\n";
+		String systemPrompt = UIConstants.SYSTEM_PROMPT;
 		if (!instructions.isEmpty()) {
 			systemPrompt += "\n" + instructions + "\n";
 		}
-		systemPrompt += "\nCurrent code:\n" + sourceCode;
+		systemPrompt += UIConstants.CURRENT_CODE_SECTION + sourceCode;
 		return systemPrompt;
 	}
 }

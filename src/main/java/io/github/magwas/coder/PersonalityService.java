@@ -12,12 +12,13 @@ public class PersonalityService {
 
 	public PersonalityData apply(String personalityName) {
 		if (configState.configData == null || configState.configData.personalities() == null) {
-			throw new IllegalStateException("Config not loaded");
+			throw new IllegalStateException(ErrorMessages.CONFIG_NOT_LOADED);
 		}
 
 		return configState.configData.personalities().stream()
 				.filter(p -> p.name().equals(personalityName))
 				.findFirst()
-				.orElseThrow(() -> new IllegalArgumentException("Personality not found: " + personalityName));
+				.orElseThrow(() -> new IllegalArgumentException(
+						String.format(ErrorMessages.PERSONALITY_NOT_FOUND, personalityName)));
 	}
 }

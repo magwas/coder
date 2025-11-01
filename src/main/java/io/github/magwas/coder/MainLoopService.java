@@ -11,7 +11,7 @@ import io.github.magwas.coder.conversation.ConversationSetupService;
 import io.github.magwas.coder.conversation.ConversationSizeService;
 
 @Service
-public class MainLoopService {
+public class MainLoopService implements UIConstants {
 	@Autowired
 	private OpenRouterClientService openRouterClientService;
 
@@ -47,15 +47,14 @@ public class MainLoopService {
 		PersonalityData personality = personalityService.apply("coder");
 
 		LineReader lineReader = lineReaderDependency.lineReader;
-		systemDependency.println.accept(
-				"OpenRouter AI Client with Spring Boot\nConversation history maintained across requests\nCommands: '/clear', '/exit', '/history', '/instructions'\nEnter multiline input ending with '.'");
+		systemDependency.println.accept(PROMPT_MESSAGE);
 		conversationSetupService.apply(personality.name());
 
 		while (true) {
 			String userInput = consoleInputService.apply(lineReader);
 			if (userInput == null) break;
 			if (userInput.isEmpty()) continue;
-			systemDependency.println.accept("--- got it ---");
+			systemDependency.println.accept(GOT_INPUT);
 			switch (userInput.toLowerCase()) {
 				case "/clear" -> handleClear();
 				case "/history" -> handleHistory();
@@ -63,30 +62,30 @@ public class MainLoopService {
 				default -> handleQuestion(personality.name(), userInput);
 			}
 		}
-		systemDependency.println.accept("Goodbye!");
+		systemDependency.println.accept(GOODBYE_MESSAGE);
 		systemDependency.exit.accept(0);
 		return null;
 	}
 
 	private void handleClear() {
 		conversationClearService.apply();
-		systemDependency.println.accept("Conversation history cleared.");
+		systemDependency.println.accept(CLEAR_CONFIRMATION);
 	}
 
 	private void handleHistory() {
-		systemDependency.println.accept("History messages: " + conversationSizeService.apply());
+		systemDependency.println.accept(HISTORY_MESSAGE + conversationSizeService.apply());
 	}
 
 	private void handleInstructions() {
-		systemDependency.println.accept(
-				"System instructions: " + (conversationHasSystemInstructionsService.apply() ? "LOADED" : "NOT FOUND"));
+		systemDependency.println.accept(INSTRUCTIONS_STATUS
+				+ (conversationHasSystemInstructionsService.apply() ? INSTRUCTIONS_LOADED : INSTRUCTIONS_MISSING));
 	}
 
 	private void handleQuestion(String personalityName, String question) {
 		try {
 			systemDependency.println.accept(openRouterClientService.apply(personalityName, question));
 		} catch (Exception e) {
-			systemDependency.println.accept("Error: " + e.getMessage());
+			systemDependency.println.accept(ERROR_PREFIX + e.getMessage());
 			e.printStackTrace();
 		}
 	}

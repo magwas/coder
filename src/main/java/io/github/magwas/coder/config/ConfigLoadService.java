@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.github.magwas.coder.ErrorMessages;
 import io.github.magwas.coder.ObjectMapperComponent;
 
 @Service
@@ -26,7 +27,7 @@ public class ConfigLoadService {
 			ObjectMapper mapper = objectMapperComponent.getObjectMapper();
 			configState.configData = mapper.readValue(content, ConfigData.class);
 		} else {
-			throw new IOException("Config file not found: " + configFile);
+			throw new IOException(String.format(ErrorMessages.CONFIG_FILE_NOT_FOUND, configFile));
 		}
 		return null;
 	}
