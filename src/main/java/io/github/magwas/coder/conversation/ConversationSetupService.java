@@ -36,7 +36,6 @@ public class ConversationSetupService implements ConversationStateConstants {
 
 		conversationStateRepository.save(
 				new ConversationStateData(STATE_ID, history, systemMessage, hasSystemInstructions));
-
 		return null;
 	}
 

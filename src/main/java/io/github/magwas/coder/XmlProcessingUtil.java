@@ -22,7 +22,7 @@ public final class XmlProcessingUtil {
 			throws ParserConfigurationException, IOException, SAXException {
 		List<FileToWriteData> files = new ArrayList<>();
 		Document doc = parseXml(xmlContent);
-		NodeList fileNodes = doc.getElementsByTagName("file");
+		NodeList fileNodes = doc.getElementsByTagName(XmlConstants.FILE_TAG);
 		for (int i = 0; i < fileNodes.getLength(); i++) {
 			Element fileElement = (Element) fileNodes.item(i);
 			files.add(new FileToWriteData(fileElement.getAttribute("name"), fileElement.getTextContent()));
@@ -34,7 +34,7 @@ public final class XmlProcessingUtil {
 			throws ParserConfigurationException, IOException, SAXException {
 		List<FileToDeleteData> deletions = new ArrayList<>();
 		Document doc = parseXml(xmlContent);
-		NodeList deletedNodes = doc.getElementsByTagName("deleted");
+		NodeList deletedNodes = doc.getElementsByTagName(XmlConstants.DELETED_TAG);
 		for (int i = 0; i < deletedNodes.getLength(); i++) {
 			Element deletedElement = (Element) deletedNodes.item(i);
 			deletions.add(new FileToDeleteData(deletedElement.getAttribute("name")));
