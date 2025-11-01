@@ -3,6 +3,8 @@ package io.github.magwas.coder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.github.magwas.coder.config.ApiKeyConfigService;
+
 @Service
 public class ConfigService {
 	@Autowired

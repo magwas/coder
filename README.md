@@ -1,49 +1,87 @@
- # OpenRouter AI Client
+# Konveyor Coder
 
-A Spring Boot application that interacts with OpenRouter AI API with conversation history and system instructions.
-Setup
+AI-powered code assistant using OpenRouter API with Spring Boot.
 
-    Create an API key file in your home directory:
-    bash
+## Features
 
-echo "your-openrouter-api-key-here" > ~/.openrouter.key
+- Interactive console interface with command history
+- Maintains conversation context across requests
+- Processes AI responses as XML for file operations
+- Tracks token usage and request timing
+- Configurable personalities with system instructions
+- File operation safety checks (path traversal prevention)
 
-Optional: Create INSTRUCTIONS.TXT in the application directory with system instructions
+## Prerequisites
 
-    This file will be loaded automatically and prepended to all conversations
+- Java 21 JDK
+- OpenRouter API key
 
-    The instructions guide the AI's behavior and response style
+## Installation
 
-Build and run:
-bash
+1. Download coder-x.y.z.jar from maven central
 
-mvn clean package
-java -jar target/coder-1.0.0.jar
+2. Create config file at `~/.coder/coder.conf`:
+   ```json
+   {
+     "openrouterApiKey": "your-api-key-here",
+     "openrouterUrl": "https://openrouter.ai/api/v1/chat",
+     "personalities": [
+       {
+         "name": "coder",
+         "modelId": "openai/gpt-4",
+         "instructionsFile": "system_instructions.txt"
+       }
+     ]
+   }
+   ```
 
-Features
+3. Place system instructions in `~/.coder/system_instructions.txt`
 
-    API Key Management: Reads API key from ~/.openrouter.key
+## Usage
 
-    System Instructions: Loads initial instructions from INSTRUCTIONS.TXT if present
+```bash
+cd <project directory>
+java -jar coder-x.y.z.jar
+```
 
-    Conversation History: Maintains context across multiple messages
+Interactive commands:
+- `/clear` - Reset conversation history
+- `/history` - Show number of messages in conversation
+- `/instructions` - Show system instructions status
+- `/exit` or `/quit` - Exit the program
 
-    Interactive REPL: Command-line interface for chatting
+## Configuration
 
-    Spring Boot: Dependency injection and easy configuration
+### coder.conf
+- `openrouterApiKey`: Your OpenRouter API key
+- `openrouterUrl`: OpenRouter API endpoint
+- `personalities`: Array of personality configurations
 
-Commands
+### Personality Configuration
+- `name`: Personality identifier
+- `modelId`: OpenRouter model ID
+- `instructionsFile`: Filename of system instructions in ~/.coder
 
-    Type your message to chat with the AI
+## File Operations
 
-    /clear - Clear conversation history (keeps system instructions)
+AI responses must be valid XML containing file operations:
+```xml
+<root>
+  <file name="path/to/file.java">// Java code here</file>
+  <deleted name="path/to/delete.txt"/>
+</root>
+```
 
-    /history - Show number of messages in history
+## Security
 
-    /instructions - Check if system instructions are loaded
+- All file operations are restricted to project directory
+- Path traversal attempts are blocked
+- API key stored in user-specific config file
 
-    /exit or /quit - Exit the application
+## Contributing
 
-Conversation History
+Contributions welcome! Please open an issue first to discuss proposed changes.
 
-The application maintains conversation history with system instructions as the first message, allowing the AI to maintain consistent behavior and remember previous context.
+## License
+
+GNU Affero General Public License

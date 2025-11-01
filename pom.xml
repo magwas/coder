@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.github.magwas</groupId>
         <artifactId>konveyor.parent</artifactId>
-        <version>0.5.7</version>
+        <version>0.5.10</version>
     </parent>
     <artifactId>coder</artifactId>
     <version>0.0.1</version>
@@ -47,7 +47,7 @@
         <jackson.version>2.15.2</jackson.version>
         <jline.version>3.25.1</jline.version>
         <mainClass>io.github.magwas.coder.CoderApplication</mainClass>
-        <version.konveyor>0.5.7</version.konveyor>
+        <version.konveyor>0.5.10</version.konveyor>
     </properties>
     <dependencies>
         <dependency>
