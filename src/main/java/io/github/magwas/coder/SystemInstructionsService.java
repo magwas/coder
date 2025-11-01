@@ -15,7 +15,7 @@ public class SystemInstructionsService {
 	public String apply(String personalityName) {
 		try {
 			PersonalityData personality = personalityService.apply(personalityName);
-			Path instructionsFile = Path.of(personality.instructionsFile());
+			Path instructionsFile = Path.of(System.getProperty("user.home"), ".coder", personality.instructionsFile());
 			return Files.exists(instructionsFile)
 					? Files.readString(instructionsFile).trim()
 					: "";
