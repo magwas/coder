@@ -1,4 +1,4 @@
-package io.github.magwas.coder;
+package io.github.magwas.coder.config;
 
 import org.springframework.stereotype.Component;
 

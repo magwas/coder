@@ -1,10 +1,10 @@
-package io.github.magwas.coder.tests;
+package io.github.magwas.coder.config.tests;
 
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 
-import io.github.magwas.coder.ConfigLoadService;
+import io.github.magwas.coder.config.ConfigLoadService;
 import io.github.magwas.konveyor.testing.TestBase;
 
 public class ConfigLoadServiceStub implements ConfigLoadServiceTestData {

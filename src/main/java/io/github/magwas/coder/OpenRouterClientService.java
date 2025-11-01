@@ -8,6 +8,11 @@ import java.net.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.github.magwas.coder.config.ApiKeyConfigService;
+import io.github.magwas.coder.config.ConfigState;
+import io.github.magwas.coder.conversation.ConversationAddMessageService;
+import io.github.magwas.coder.conversation.ConversationGetMessagesService;
+
 @Service
 public class OpenRouterClientService implements ErrorMessages {
 	@Autowired
@@ -31,6 +36,9 @@ public class OpenRouterClientService implements ErrorMessages {
 	@Autowired
 	private ApiKeyConfigService apiKeyConfigService;
 
+	@Autowired
+	private TimeDependency timeDependency;
+
 	private final HttpClient httpClient = HttpClient.newHttpClient();
 
 	public String apply(String personalityName, String question) {
@@ -51,11 +59,15 @@ public class OpenRouterClientService implements ErrorMessages {
 					.POST(HttpRequest.BodyPublishers.ofString(requestBody))
 					.build();
 
+			long startTime = timeDependency.currentTimeMillis();
 			HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+			long endTime = timeDependency.currentTimeMillis();
+			long duration = endTime - startTime;
+
 			fileWriterService.apply("target/response.dump", response.body());
 
 			if (response.statusCode() == 200) {
-				String result = responseService.apply(response.body());
+				String result = responseService.apply(response.body(), duration);
 				conversationAddMessageService.apply(new RequestMessageData("assistant", result));
 				return result;
 			} else {

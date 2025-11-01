@@ -18,10 +18,22 @@ public class OpenRouterResponseServiceTest extends TestBase implements OpenRoute
 	private OpenRouterResponseService underTest;
 
 	@Test
-	@DisplayName("Process valid response")
-	void testProcessValidResponse() throws Exception {
-		String result = underTest.apply(RESPONSE_BODY);
-		assertEquals(REASONING + FormattingConstants.SECTION_DIVIDER + FORMATTED_FILES + TOKEN_USAGE, result);
+	@DisplayName("Process valid response with timing")
+	void testProcessValidResponseWithTiming() throws Exception {
+		String result = underTest.apply(RESPONSE_BODY, 1000L);
+		assertTrue(result.contains(REASONING + FormattingConstants.SECTION_DIVIDER));
+		assertTrue(result.contains(FORMATTED_FILES));
+		assertTrue(result.contains(TOKEN_USAGE));
+		assertTrue(result.contains("Request time: 1000 ms"));
+		assertTrue(result.contains("Tokens per second: 150.00"));
 		verify(TestUtil.dependency(underTest, FileWriterService.class)).apply("target/ai.xml", CONTENT);
+	}
+
+	@Test
+	@DisplayName("Process response with zero duration")
+	void testProcessResponseWithZeroDuration() throws Exception {
+		String result = underTest.apply(RESPONSE_BODY, 0L);
+		assertTrue(result.contains(TOKEN_USAGE));
+		assertFalse(result.contains("Tokens per second")); // Should not calculate TPS for zero duration
 	}
 }

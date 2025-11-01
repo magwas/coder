@@ -9,15 +9,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import io.github.magwas.coder.ConfigLoadService;
-import io.github.magwas.coder.ConversationClearService;
-import io.github.magwas.coder.ConversationHasSystemInstructionsService;
-import io.github.magwas.coder.ConversationSizeService;
 import io.github.magwas.coder.MainLoopService;
 import io.github.magwas.coder.OpenRouterClientService;
 import io.github.magwas.coder.PersonalityData;
 import io.github.magwas.coder.PersonalityService;
 import io.github.magwas.coder.SystemExitSimulationException;
+import io.github.magwas.coder.config.ConfigLoadService;
+import io.github.magwas.coder.conversation.ConversationClearService;
+import io.github.magwas.coder.conversation.ConversationHasSystemInstructionsService;
+import io.github.magwas.coder.conversation.ConversationSizeService;
 import io.github.magwas.konveyor.testing.TestBase;
 
 public class MainLoopServiceTest extends TestBase implements MainLoopTestData {

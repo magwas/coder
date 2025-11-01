@@ -4,6 +4,12 @@ import org.jline.reader.LineReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.github.magwas.coder.config.ConfigLoadService;
+import io.github.magwas.coder.conversation.ConversationClearService;
+import io.github.magwas.coder.conversation.ConversationHasSystemInstructionsService;
+import io.github.magwas.coder.conversation.ConversationSetupService;
+import io.github.magwas.coder.conversation.ConversationSizeService;
+
 @Service
 public class MainLoopService {
 	@Autowired

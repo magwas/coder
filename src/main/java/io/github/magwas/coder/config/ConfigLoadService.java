@@ -1,4 +1,4 @@
-package io.github.magwas.coder;
+package io.github.magwas.coder.config;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.github.magwas.coder.ObjectMapperComponent;
 
 @Service
 public class ConfigLoadService {

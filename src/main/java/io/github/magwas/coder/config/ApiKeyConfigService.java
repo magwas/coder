@@ -1,7 +1,9 @@
-package io.github.magwas.coder;
+package io.github.magwas.coder.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import io.github.magwas.coder.ErrorMessages;
 
 @Service
 public class ApiKeyConfigService implements ErrorMessages {
