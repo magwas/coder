@@ -3,66 +3,41 @@ package io.github.magwas.coder.tests;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.net.http.HttpResponse;
+import java.net.http.HttpRequest;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import io.github.magwas.coder.HttpClientDependency;
 import io.github.magwas.coder.OpenRouterClientService;
-import io.github.magwas.coder.OpenRouterRequestService;
-import io.github.magwas.coder.OpenRouterResponseService;
-import io.github.magwas.coder.TimeDependency;
 import io.github.magwas.coder.config.ConfigState;
 import io.github.magwas.konveyor.testing.TestBase;
 
-public class OpenRouterClientServiceTest extends TestBase implements OpenRouterClientTestData {
+public class OpenRouterClientServiceTest extends TestBase {
 
 	@InjectMocks
-	private OpenRouterClientService underTest;
-
-	@Mock
-	private OpenRouterRequestService requestService;
-
-	@Mock
-	private OpenRouterResponseService responseService;
+	private OpenRouterClientService openRouterClientService;
 
 	@Mock
 	private ConfigState configState;
 
 	@Mock
-	private TimeDependency timeDependency;
-
-	@BeforeEach
-	public void setUp() throws Throwable {
-		super.setUp();
-		when(timeDependency.currentTimeMillis()).thenReturn(1000L, 2000L);
-	}
+	private HttpClientDependency httpClientDependency;
 
 	@Test
-	@DisplayName("Successful API call includes timing")
-	void testSuccessfulApiCall() throws Exception {
-		when(requestService.apply(anyString(), any())).thenReturn("{}");
-		when(responseService.apply(anyString(), anyLong())).thenReturn("Response with timing");
+	@DisplayName("Content-Type header is set to application/json")
+	void testContentTypeHeader() throws Exception {
+		openRouterClientService.sendRequest("{}", "Bearer key");
 
-		var httpResponse = mock(HttpResponse.class);
-		when(httpResponse.statusCode()).thenReturn(200);
-		when(httpResponse.body()).thenReturn("{}");
+		ArgumentCaptor<HttpRequest> requestCaptor = ArgumentCaptor.forClass(HttpRequest.class);
+		verify(httpClientDependency.httpClient).send(requestCaptor.capture(), any());
+		HttpRequest capturedRequest = requestCaptor.getValue();
 
-		assertThrows(Exception.class, () -> underTest.apply(PERSONALITY_NAME, TEST_QUESTION));
-	}
-
-	@Test
-	@DisplayName("API error returns error message")
-	void testApiError() throws Exception {
-		when(requestService.apply(anyString(), any())).thenReturn("{}");
-
-		var httpResponse = mock(HttpResponse.class);
-		when(httpResponse.statusCode()).thenReturn(500);
-		when(httpResponse.body()).thenReturn("Error");
-
-		assertThrows(Exception.class, () -> underTest.apply(PERSONALITY_NAME, TEST_QUESTION));
+		String contentTypeHeader =
+				capturedRequest.headers().firstValue("Content-Type").orElse("Header not found");
+		assertEquals("application/json", contentTypeHeader);
 	}
 }

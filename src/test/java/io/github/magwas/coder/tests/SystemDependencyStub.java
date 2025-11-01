@@ -13,7 +13,7 @@ public class SystemDependencyStub {
 
 	@SuppressWarnings("unchecked")
 	public static SystemDependency stub() {
-		SystemDependency mock = mock(SystemDependency.class);
+		SystemDependency mock = new SystemDependency();
 		mock.exit = (Integer n) -> {
 			throw new SystemExitSimulationException(n);
 		};

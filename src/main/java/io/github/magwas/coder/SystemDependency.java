@@ -9,7 +9,7 @@ public class SystemDependency {
 	public Consumer<Integer> exit;
 	public Consumer<String> println;
 
-	SystemDependency() {
+	public SystemDependency() {
 		exit = System::exit;
 		println = System.out::println;
 	}

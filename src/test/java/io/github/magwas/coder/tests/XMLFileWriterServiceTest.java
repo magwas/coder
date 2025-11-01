@@ -17,12 +17,12 @@ import io.github.magwas.konveyor.testing.TestBase;
 public class XMLFileWriterServiceTest extends TestBase implements XMLFileWriterTestData {
 
 	@InjectMocks
-	private XMLFileWriterService underTest;
+	private XMLFileWriterService xmlFileWriterService;
 
 	@Test
 	@DisplayName("Write files from XML")
 	void testWriteFilesFromXml() throws Exception {
-		ProcessedFilesData result = underTest.apply(VALID_XML_WITH_FILES);
+		ProcessedFilesData result = xmlFileWriterService.apply(VALID_XML_WITH_FILES);
 		assertIterableEquals(List.of(FILE_NAME_1, FILE_NAME_2), result.modifiedFiles());
 		assertTrue(result.deletedFiles().isEmpty());
 	}
@@ -30,7 +30,7 @@ public class XMLFileWriterServiceTest extends TestBase implements XMLFileWriterT
 	@Test
 	@DisplayName("Delete files from XML")
 	void testDeleteFilesFromXml() throws Exception {
-		ProcessedFilesData result = underTest.apply(VALID_XML_WITH_DELETIONS);
+		ProcessedFilesData result = xmlFileWriterService.apply(VALID_XML_WITH_DELETIONS);
 		assertIterableEquals(List.of(FILE_NAME_1, FILE_NAME_2), result.deletedFiles());
 		assertTrue(result.modifiedFiles().isEmpty());
 	}
@@ -38,7 +38,7 @@ public class XMLFileWriterServiceTest extends TestBase implements XMLFileWriterT
 	@Test
 	@DisplayName("Path traversal throws exception")
 	void testPathTraversalThrows() throws Exception {
-		Exception e = assertThrows(RuntimeException.class, () -> underTest.apply(XML_WITH_PATH_TRAVERSAL));
+		Exception e = assertThrows(RuntimeException.class, () -> xmlFileWriterService.apply(XML_WITH_PATH_TRAVERSAL));
 		assertEquals(ErrorMessages.PATH_TRAVERSAL_ERROR, e.getMessage());
 	}
 }

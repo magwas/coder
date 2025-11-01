@@ -42,6 +42,9 @@ public class MainLoopService implements UIConstants {
 	@Autowired
 	private PersonalityService personalityService;
 
+	@Autowired
+	private QuestionHandlerService questionHandlerService;
+
 	public Void apply() throws Exception {
 		configLoadService.apply();
 		PersonalityData personality = personalityService.apply("coder");
@@ -59,7 +62,7 @@ public class MainLoopService implements UIConstants {
 				case "/clear" -> handleClear();
 				case "/history" -> handleHistory();
 				case "/instructions" -> handleInstructions();
-				default -> handleQuestion(personality.name(), userInput);
+				default -> questionHandlerService.apply(personality.name(), userInput);
 			}
 		}
 		systemDependency.println.accept(GOODBYE_MESSAGE);
@@ -79,14 +82,5 @@ public class MainLoopService implements UIConstants {
 	private void handleInstructions() {
 		systemDependency.println.accept(INSTRUCTIONS_STATUS
 				+ (conversationHasSystemInstructionsService.apply() ? INSTRUCTIONS_LOADED : INSTRUCTIONS_MISSING));
-	}
-
-	private void handleQuestion(String personalityName, String question) {
-		try {
-			systemDependency.println.accept(openRouterClientService.apply(personalityName, question));
-		} catch (Exception e) {
-			systemDependency.println.accept(ERROR_PREFIX + e.getMessage());
-			e.printStackTrace();
-		}
 	}
 }
