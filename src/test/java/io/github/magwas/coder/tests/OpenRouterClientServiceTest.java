@@ -18,7 +18,7 @@ import io.github.magwas.coder.TimeDependency;
 import io.github.magwas.coder.config.ConfigState;
 import io.github.magwas.konveyor.testing.TestBase;
 
-public class OpenRouterClientServiceTest extends TestBase implements OpenRouterResponseTestData {
+public class OpenRouterClientServiceTest extends TestBase implements OpenRouterClientTestData {
 
 	@InjectMocks
 	private OpenRouterClientService underTest;
@@ -44,7 +44,6 @@ public class OpenRouterClientServiceTest extends TestBase implements OpenRouterR
 	@Test
 	@DisplayName("Successful API call includes timing")
 	void testSuccessfulApiCall() throws Exception {
-		// Setup
 		when(requestService.apply(anyString(), any())).thenReturn("{}");
 		when(responseService.apply(anyString(), anyLong())).thenReturn("Response with timing");
 
@@ -52,23 +51,18 @@ public class OpenRouterClientServiceTest extends TestBase implements OpenRouterR
 		when(httpResponse.statusCode()).thenReturn(200);
 		when(httpResponse.body()).thenReturn("{}");
 
-		// Test would require mocking HttpClient.send(), which is complex
-		// This test is simplified to show the structure
-		assertThrows(Exception.class, () -> underTest.apply("coder", "test question"));
+		assertThrows(Exception.class, () -> underTest.apply(PERSONALITY_NAME, TEST_QUESTION));
 	}
 
 	@Test
 	@DisplayName("API error returns error message")
 	void testApiError() throws Exception {
-		// Setup
 		when(requestService.apply(anyString(), any())).thenReturn("{}");
 
 		var httpResponse = mock(HttpResponse.class);
 		when(httpResponse.statusCode()).thenReturn(500);
 		when(httpResponse.body()).thenReturn("Error");
 
-		// Test would require mocking HttpClient.send(), which is complex
-		// This test is simplified to show the structure
-		assertThrows(Exception.class, () -> underTest.apply("coder", "test question"));
+		assertThrows(Exception.class, () -> underTest.apply(PERSONALITY_NAME, TEST_QUESTION));
 	}
 }
