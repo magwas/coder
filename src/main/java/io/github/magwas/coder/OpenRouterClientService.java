@@ -10,20 +10,20 @@ import org.springframework.stereotype.Service;
 import io.github.magwas.coder.config.ConfigState;
 
 @Service
-public class OpenRouterClientService {
+public class OpenRouterClientService implements HTTPConstants {
 	@Autowired
-	public HttpClientDependency httpClientDependency;
+	public HttpClientWrapper httpClientDependency;
 
 	@Autowired
-	private ConfigState configState;
+	ConfigState configState;
 
 	public HttpResponse<String> sendRequest(String requestBody, String authHeader) throws Exception {
 		HttpRequest request = HttpRequest.newBuilder()
 				.uri(URI.create(configState.configData.openrouterUrl()))
-				.header("Authorization", authHeader)
-				.header("Content-Type", "application/json")
-				.header("HTTP-Referer", "https://github.com/magwas/konveyor")
-				.header("X-Title", "Konveyor Coder")
+				.header(AUTHORIZATION_HEADER, authHeader)
+				.header(CONTENT_TYPE_HEADER, APPLICATION_JSON_CONTENT_TYPE)
+				.header(HTTP_REFERER_HEADER, REFERER_URL)
+				.header(X_TITLE_HEADER, TITLE_CONTENT)
 				.POST(HttpRequest.BodyPublishers.ofString(requestBody))
 				.build();
 

@@ -8,7 +8,7 @@ import io.github.magwas.coder.config.ConfigState;
 @Service
 public class PersonalityService {
 	@Autowired
-	private ConfigState configState;
+	ConfigState configState;
 
 	public PersonalityData apply(String personalityName) {
 		if (configState.configData == null || configState.configData.personalities() == null) {

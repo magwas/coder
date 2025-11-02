@@ -13,13 +13,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class OpenRouterResponseService implements ErrorMessages, FormattingConstants {
 	@Autowired
-	private ObjectMapperWrapper objectMapperWrapper;
+	ObjectMapperWrapper objectMapperWrapper;
 
 	@Autowired
-	private XMLFileWriterService xmlFileWriterService;
+	XMLFileWriterService xmlFileWriterService;
 
 	@Autowired
-	private FileWriterService fileWriterService;
+	FileWriterService fileWriterService;
 
 	public String apply(String responseBody, long durationMs)
 			throws IOException, ParserConfigurationException, SAXException {
@@ -51,7 +51,6 @@ public class OpenRouterResponseService implements ErrorMessages, FormattingConst
 			// Calculate TPS
 			int totalTokens =
 					response.usage().prompt_tokens() + response.usage().completion_tokens();
-			double seconds = durationMs / 1000.0;
 			result.append(String.format("\nRequest time: %d ms", durationMs));
 			if (durationMs > 0) {
 				double tps = totalTokens * 1000.0 / durationMs;

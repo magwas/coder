@@ -1,5 +1,7 @@
 package io.github.magwas.coder;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,14 +10,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 @Service
 public class OpenRouterRequestService {
 	@Autowired
-	private ObjectMapperWrapper objectMapperWrapper;
+	ObjectMapperWrapper objectMapperWrapper;
 
-	@Autowired
-	private PersonalityService personalityService;
-
-	public String apply(String personalityName, RequestMessageData[] messages) throws JsonProcessingException {
-		PersonalityData personality = personalityService.apply(personalityName);
+	public String apply(PersonalityData personality, List<RequestMessageData> messages) throws JsonProcessingException {
 		return objectMapperWrapper.objectMapper.writeValueAsString(
-				new RequestDataData(personality.modelId(), messages, new ReasoningData(true)));
+				new OpenRouterRequestData(personality.modelId(), messages, new ReasoningData(true)));
 	}
 }

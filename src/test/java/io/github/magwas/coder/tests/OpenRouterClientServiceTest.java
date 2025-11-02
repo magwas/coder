@@ -11,7 +11,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import io.github.magwas.coder.HttpClientDependency;
+import io.github.magwas.coder.HttpClientWrapper;
 import io.github.magwas.coder.OpenRouterClientService;
 import io.github.magwas.coder.config.ConfigState;
 import io.github.magwas.konveyor.testing.TestBase;
@@ -25,7 +25,7 @@ public class OpenRouterClientServiceTest extends TestBase {
 	private ConfigState configState;
 
 	@Mock
-	private HttpClientDependency httpClientDependency;
+	private HttpClientWrapper httpClientDependency;
 
 	@Test
 	@DisplayName("Content-Type header is set to application/json")

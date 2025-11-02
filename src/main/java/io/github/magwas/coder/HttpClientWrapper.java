@@ -5,6 +5,6 @@ import java.net.http.HttpClient;
 import org.springframework.stereotype.Component;
 
 @Component
-public class HttpClientDependency {
+public class HttpClientWrapper {
 	public HttpClient httpClient = HttpClient.newHttpClient();
 }

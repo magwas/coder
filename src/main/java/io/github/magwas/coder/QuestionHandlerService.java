@@ -6,43 +6,40 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.github.magwas.coder.config.ApiKeyConfigService;
-import io.github.magwas.coder.conversation.ConversationAddMessageService;
-import io.github.magwas.coder.conversation.ConversationGetMessagesService;
+import io.github.magwas.coder.conversation.ConversationState;
 
 @Service
 public class QuestionHandlerService implements ErrorMessages, UIConstants {
 	@Autowired
-	public SystemDependency systemDependency;
+	SystemWrapper systemDependency;
 
 	@Autowired
-	private OpenRouterClientService openRouterClientService;
+	OpenRouterClientService openRouterClientService;
 
 	@Autowired
-	private ConversationAddMessageService conversationAddMessageService;
+	ConversationState conversationState;
 
 	@Autowired
-	private ConversationGetMessagesService conversationGetMessagesService;
+	OpenRouterRequestService requestService;
 
 	@Autowired
-	private OpenRouterRequestService requestService;
+	FileWriterService fileWriterService;
 
 	@Autowired
-	private FileWriterService fileWriterService;
+	ApiKeyConfigService apiKeyConfigService;
 
 	@Autowired
-	private ApiKeyConfigService apiKeyConfigService;
+	TimeWrapper timeDependency;
 
 	@Autowired
-	private TimeDependency timeDependency;
+	OpenRouterResponseService responseService;
 
-	@Autowired
-	private OpenRouterResponseService responseService;
-
-	public Void apply(String personalityName, String question) {
+	public void apply(PersonalityData personality, StringBuilder question) {
 		try {
-			conversationAddMessageService.apply(new RequestMessageData("user", question));
-
-			String requestBody = requestService.apply(personalityName, conversationGetMessagesService.apply());
+			systemDependency.println.accept(GOT_INPUT);
+			conversationState.conversationHistory.add(new RequestMessageData("user", question.toString()));
+			question.setLength(0);
+			String requestBody = requestService.apply(personality, conversationState.conversationHistory);
 			fileWriterService.apply(FileConstants.REQUEST_DUMP_PATH, requestBody);
 
 			String authHeader = apiKeyConfigService.apply();
@@ -56,7 +53,7 @@ public class QuestionHandlerService implements ErrorMessages, UIConstants {
 
 			if (response.statusCode() == 200) {
 				String result = responseService.apply(response.body(), duration);
-				conversationAddMessageService.apply(new RequestMessageData("assistant", result));
+				conversationState.conversationHistory.add(new RequestMessageData("assistant", result));
 				systemDependency.println.accept(result);
 			} else {
 				systemDependency.println.accept(String.format(ERROR_TEMPLATE, response.statusCode(), response.body()));
@@ -64,6 +61,5 @@ public class QuestionHandlerService implements ErrorMessages, UIConstants {
 		} catch (Exception e) {
 			systemDependency.println.accept(ERROR_PREFIX + e.getMessage());
 		}
-		return null;
 	}
 }

@@ -5,46 +5,28 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.github.magwas.coder.PersonalityService;
-import io.github.magwas.coder.RequestMessageData;
-import io.github.magwas.coder.SourceCodeReaderService;
-import io.github.magwas.coder.SystemInstructionsService;
-import io.github.magwas.coder.UIConstants;
+import io.github.magwas.coder.*;
 
 @Service
-public class ConversationSetupService implements ConversationStateConstants {
+public class ConversationSetupService {
 	@Autowired
-	private SystemInstructionsService systemInstructionsService;
+	SystemInstructionsService systemInstructionsService;
 
 	@Autowired
-	private SourceCodeReaderService sourceCodeReaderService;
+	SourceCodeReaderService sourceCodeReaderService;
 
 	@Autowired
-	private ConversationStateRepository conversationStateRepository;
+	ConversationState conversationState;
 
-	@Autowired
-	private PersonalityService personalityService;
-
-	public Void apply(String personalityName) {
-		String instructions = systemInstructionsService.apply(personalityName);
+	public void apply(PersonalityData personality) {
+		String instructions = systemInstructionsService.apply(personality);
 		String sourceCode = sourceCodeReaderService.apply();
-		boolean hasSystemInstructions = !instructions.isEmpty();
-		String systemMessage = createSystemMessage(instructions, sourceCode);
 
 		ArrayList<RequestMessageData> history = new ArrayList<>();
-		history.add(new RequestMessageData("system", systemMessage));
+		history.add(new RequestMessageData("system", instructions));
+		history.add(new RequestMessageData("system", UIConstants.CURRENT_CODE_SECTION + sourceCode));
 
-		conversationStateRepository.save(
-				new ConversationStateData(STATE_ID, history, systemMessage, hasSystemInstructions));
-		return null;
-	}
-
-	private String createSystemMessage(String instructions, String sourceCode) {
-		String systemPrompt = UIConstants.SYSTEM_PROMPT;
-		if (!instructions.isEmpty()) {
-			systemPrompt += "\n" + instructions + "\n";
-		}
-		systemPrompt += UIConstants.CURRENT_CODE_SECTION + sourceCode;
-		return systemPrompt;
+		conversationState.systemMessage = instructions;
+		conversationState.conversationHistory = history;
 	}
 }

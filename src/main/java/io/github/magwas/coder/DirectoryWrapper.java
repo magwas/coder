@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DirectoryComponent {
+public class DirectoryWrapper {
 	public Path getCurrentDir() {
 		return Paths.get("").toAbsolutePath();
 	}

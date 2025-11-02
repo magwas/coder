@@ -61,7 +61,6 @@ public class SourceCodeReaderService implements SourceCodeReaderConstants {
 								.append(content)
 								.append("</file>\n");
 					} catch (IOException e) {
-						// Skip unreadable files
 						System.err.println("Cannot read file: " + path);
 					}
 				});

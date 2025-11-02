@@ -4,16 +4,16 @@ import static org.mockito.Mockito.mock;
 
 import java.util.function.Consumer;
 
-import io.github.magwas.coder.SystemDependency;
 import io.github.magwas.coder.SystemExitSimulationException;
+import io.github.magwas.coder.SystemWrapper;
 
-public class SystemDependencyStub {
+public class SystemWrapperStub {
 
 	public static Consumer<String> printlnMock;
 
 	@SuppressWarnings("unchecked")
-	public static SystemDependency stub() {
-		SystemDependency mock = new SystemDependency();
+	public static SystemWrapper stub() {
+		SystemWrapper mock = new SystemWrapper();
 		mock.exit = (Integer n) -> {
 			throw new SystemExitSimulationException(n);
 		};

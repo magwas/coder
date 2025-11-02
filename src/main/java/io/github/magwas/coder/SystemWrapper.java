@@ -5,11 +5,11 @@ import java.util.function.Consumer;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SystemDependency {
+public class SystemWrapper {
 	public Consumer<Integer> exit;
 	public Consumer<String> println;
 
-	public SystemDependency() {
+	public SystemWrapper() {
 		exit = System::exit;
 		println = System.out::println;
 	}

@@ -14,16 +14,16 @@ import org.xml.sax.SAXException;
 @Service
 public class XMLFileWriterService {
 	@Autowired
-	private FileWriterService fileWriterService;
+	FileWriterService fileWriterService;
 
 	@Autowired
-	private FileDeletionService fileDeletionService;
+	FileDeletionService fileDeletionService;
 
 	@Autowired
-	private DirectoryComponent directoryComponent;
+	DirectoryWrapper directory;
 
 	public ProcessedFilesData apply(String xmlContent) throws ParserConfigurationException, IOException, SAXException {
-		Path currentDir = directoryComponent.getCurrentDir();
+		Path currentDir = directory.getCurrentDir();
 		List<String> modifiedFiles = new ArrayList<>();
 		List<String> deletedFiles = new ArrayList<>();
 

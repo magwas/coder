@@ -9,13 +9,13 @@ import org.jline.terminal.TerminalBuilder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LineReaderDependency {
-	public LineReader lineReader;
+public class LineReaderWrapper {
+	public LineReader reader;
 
-	public LineReaderDependency() {
+	public LineReaderWrapper() {
 		try {
 			Terminal terminal = TerminalBuilder.builder().system(true).build();
-			this.lineReader = LineReaderBuilder.builder().terminal(terminal).build();
+			this.reader = LineReaderBuilder.builder().terminal(terminal).build();
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to create LineReader", e);
 		}

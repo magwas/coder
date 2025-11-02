@@ -5,82 +5,76 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.github.magwas.coder.config.ConfigLoadService;
-import io.github.magwas.coder.conversation.ConversationClearService;
-import io.github.magwas.coder.conversation.ConversationHasSystemInstructionsService;
 import io.github.magwas.coder.conversation.ConversationSetupService;
-import io.github.magwas.coder.conversation.ConversationSizeService;
+import io.github.magwas.coder.conversation.ConversationState;
 
 @Service
-public class MainLoopService implements UIConstants {
-	@Autowired
-	private OpenRouterClientService openRouterClientService;
+public class MainLoopService implements UIConstants, CommandConstants {
 
 	@Autowired
-	private ConsoleInputService consoleInputService;
+	ConversationSetupService conversationSetupService;
 
 	@Autowired
-	private ConversationClearService conversationClearService;
+	ConversationState conversationState;
 
 	@Autowired
-	private ConversationSizeService conversationSizeService;
+	LineReaderWrapper lineReaderDependency;
 
 	@Autowired
-	private ConversationHasSystemInstructionsService conversationHasSystemInstructionsService;
+	SystemWrapper systemDependency;
 
 	@Autowired
-	private ConversationSetupService conversationSetupService;
+	ConfigLoadService configLoadService;
 
 	@Autowired
-	private LineReaderDependency lineReaderDependency;
+	PersonalityService personalityService;
 
 	@Autowired
-	private SystemDependency systemDependency;
+	QuestionHandlerService questionHandlerService;
 
-	@Autowired
-	private ConfigLoadService configLoadService;
-
-	@Autowired
-	private PersonalityService personalityService;
-
-	@Autowired
-	private QuestionHandlerService questionHandlerService;
-
-	public Void apply() throws Exception {
+	public void apply() throws Exception {
 		configLoadService.apply();
 		PersonalityData personality = personalityService.apply("coder");
 
-		LineReader lineReader = lineReaderDependency.lineReader;
+		LineReader lineReader = lineReaderDependency.reader;
 		systemDependency.println.accept(PROMPT_MESSAGE);
-		conversationSetupService.apply(personality.name());
+		conversationSetupService.apply(personality);
 
+		StringBuilder input = new StringBuilder();
 		while (true) {
-			String userInput = consoleInputService.apply(lineReader);
-			if (userInput == null) break;
-			if (userInput.isEmpty()) continue;
-			systemDependency.println.accept(GOT_INPUT);
-			switch (userInput.toLowerCase()) {
-				case "/clear" -> handleClear();
-				case "/history" -> handleHistory();
-				case "/instructions" -> handleInstructions();
-				default -> questionHandlerService.apply(personality.name(), userInput);
+			String line = lineReader.readLine(INPUT_PROMPT);
+			if (null == line || CMD_EXIT.equals(line)) break;
+			switch (line.split(" ")[0]) {
+				case CMD_CLEAR -> handleClear(personality);
+				case CMD_HISTORY -> handleHistory();
+				case CMD_INSTRUCTIONS -> handleInstructions();
+				case MULTILINE_END -> questionHandlerService.apply(personality, input);
+
+				default -> handleLine(input, line);
 			}
+			systemDependency.println.accept(GOODBYE_MESSAGE);
+			systemDependency.exit.accept(0);
 		}
-		systemDependency.println.accept(GOODBYE_MESSAGE);
-		systemDependency.exit.accept(0);
-		return null;
 	}
 
-	private void handleClear() {
-		conversationClearService.apply();
+	private static void handleLine(StringBuilder input, String line) {
+		if (!input.isEmpty()) {
+			input.append("\n");
+		}
+		input.append(line);
+	}
+
+	private void handleClear(PersonalityData personality) {
+		conversationSetupService.apply(personality);
 		systemDependency.println.accept(CLEAR_CONFIRMATION);
 	}
 
 	private void handleHistory() {
-		systemDependency.println.accept(HISTORY_MESSAGE + conversationSizeService.apply());
+		systemDependency.println.accept(HISTORY_MESSAGE + conversationState.conversationHistory.size());
 	}
 
 	private void handleInstructions() {
 		systemDependency.println.accept(INSTRUCTIONS_STATUS
-				+ (conversationHasSystemInstructionsService.apply() ? INSTRUCTIONS_LOADED : INSTRUCTIONS_MISSING));
+				+ (conversationState.systemMessage != null ? INSTRUCTIONS_LOADED : INSTRUCTIONS_MISSING));
 	}
 }
