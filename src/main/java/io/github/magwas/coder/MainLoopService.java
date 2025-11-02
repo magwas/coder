@@ -73,7 +73,7 @@ public class MainLoopService implements ErrorMessages, UIConstants, CommandConst
 				case CMD_INSTRUCTIONS -> handleInstructions();
 				case CMD_PERSONALITY -> {
 					if (commandLine.length > 1) {
-						handlePersonality(commandLine[1]);
+						personality = handlePersonality(commandLine[1], personality);
 					} else {
 						systemDependency.println(PERSONALITY_USAGE);
 					}
@@ -86,14 +86,18 @@ public class MainLoopService implements ErrorMessages, UIConstants, CommandConst
 		systemDependency.exit(0);
 	}
 
-	private void handlePersonality(String name) {
+	private PersonalityData handlePersonality(String name, PersonalityData personality) {
 		try {
 			PersonalityData newPersonality = personalityService.apply(name);
 			conversationSetupService.apply(newPersonality);
 			systemDependency.println(String.format(PERSONALITY_CHANGED, name));
+			systemDependency.println("new personality:" + newPersonality);
+			return newPersonality;
 		} catch (IllegalArgumentException e) {
 			systemDependency.println(String.format(PERSONALITY_NOT_FOUND, name));
 		}
+
+		return personality;
 	}
 
 	private void askAi(PersonalityData personality, StringBuilder input) {
@@ -124,6 +128,7 @@ public class MainLoopService implements ErrorMessages, UIConstants, CommandConst
 				}
 
 				if (!xmlSuccess) break;
+				conversationSetupService.apply(personality);
 
 				if (personality.testCommand() != null
 						&& !personality.testCommand().isEmpty()) {
