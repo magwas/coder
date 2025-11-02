@@ -9,4 +9,5 @@ public record PersonalityData(
 		Boolean writeXML,
 		String testCommand,
 		Integer testRetries,
-		Boolean addReply) {}
+		Boolean addReply,
+		Boolean includeSource) {}

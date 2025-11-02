@@ -20,11 +20,13 @@ public class ConversationSetupService {
 
 	public void apply(PersonalityData personality) {
 		String instructions = systemInstructionsService.apply(personality);
-		String sourceCode = sourceCodeReaderService.apply();
-
 		ArrayList<RequestMessageData> history = new ArrayList<>();
 		history.add(new RequestMessageData("system", instructions));
-		history.add(new RequestMessageData("system", UIConstants.CURRENT_CODE_SECTION + sourceCode));
+
+		if (Boolean.TRUE.equals(personality.includeSource())) {
+			String sourceCode = sourceCodeReaderService.apply();
+			history.add(new RequestMessageData("system", UIConstants.CURRENT_CODE_SECTION + sourceCode));
+		}
 
 		conversationState.systemMessage = instructions;
 		conversationState.conversationHistory = history;
