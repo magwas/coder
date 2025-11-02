@@ -124,6 +124,7 @@ public class MainLoopService implements ErrorMessages, UIConstants, CommandConst
 						systemDependency.println(e.getMessage());
 					}
 					input.append(MessageFormat.format(BAD_XML_PROMPT, e.getMessage()));
+					systemDependency.println(input.toString());
 					result = questionProcessingService.apply(personality, input);
 				}
 
@@ -136,6 +137,7 @@ public class MainLoopService implements ErrorMessages, UIConstants, CommandConst
 					if (testOutput.isEmpty()) {
 						break;
 					} else {
+						systemDependency.println(testOutput);
 						input.append("\n").append(testOutput);
 						result = questionProcessingService.apply(personality, input);
 					}
