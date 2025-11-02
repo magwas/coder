@@ -51,6 +51,9 @@ public class MainLoopService implements ErrorMessages, UIConstants, CommandConst
 	@Autowired
 	QuestionProcessingService questionProcessingService;
 
+	@Autowired
+	RunCommandService runCommandService;
+
 	public void apply() throws IOException {
 		configLoadService.apply();
 		PersonalityData personality = personalityService.apply("coder");
@@ -78,14 +81,56 @@ public class MainLoopService implements ErrorMessages, UIConstants, CommandConst
 
 	private void askAi(PersonalityData personality, StringBuilder input) {
 		ResponseInfo result = questionProcessingService.apply(personality, input);
-		if (personality.writeXML())
-			for (int i = 0; i < config.configData.xmlRetries(); i++) {
-				Exception e = writeFiles(result);
-				if (e == null) break;
-				if (!e.getClass().equals(SAXException.class)) systemDependency.println(e.getMessage());
-				input.append(MessageFormat.format(BAD_XML_PROMPT, e.getMessage()));
-				result = questionProcessingService.apply(personality, input);
+		writeXml(personality, input, result);
+	}
+
+	private void writeXml(PersonalityData personality, StringBuilder input, ResponseInfo result) {
+		if (personality.writeXML()) {
+			int maxRetries = (personality.testCommand() != null
+							&& !personality.testCommand().isEmpty())
+					? personality.testRetries()
+					: config.configData.xmlRetries();
+
+			for (int retry = 0; retry < maxRetries; retry++) {
+				boolean xmlSuccess = false;
+				for (int xmlRetry = 0; xmlRetry < config.configData.xmlRetries(); xmlRetry++) {
+					Exception e = writeFiles(result);
+					if (e == null) {
+						xmlSuccess = true;
+						break;
+					}
+					if (!e.getClass().equals(SAXException.class)) {
+						systemDependency.println(e.getMessage());
+					}
+					input.append(MessageFormat.format(BAD_XML_PROMPT, e.getMessage()));
+					result = questionProcessingService.apply(personality, input);
+				}
+
+				if (!xmlSuccess) break;
+
+				if (personality.testCommand() != null
+						&& !personality.testCommand().isEmpty()) {
+					String testOutput = runTestCommand(personality.testCommand());
+					if (testOutput.isEmpty()) {
+						break;
+					} else {
+						input.append("\n").append(testOutput);
+						result = questionProcessingService.apply(personality, input);
+					}
+				} else {
+					break;
+				}
 			}
+		}
+	}
+
+	private String runTestCommand(String testCommand) {
+		try {
+			String output = runCommandService.apply(testCommand);
+			return output.isEmpty() ? "" : output;
+		} catch (RuntimeException e) {
+			return e.getMessage();
+		}
 	}
 
 	private Exception writeFiles(ResponseInfo result) {
