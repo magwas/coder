@@ -1,5 +1,6 @@
 package io.github.magwas.coder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -17,7 +18,8 @@ public class OpenRouterClientService implements HTTPConstants {
 	@Autowired
 	ConfigState configState;
 
-	public HttpResponse<String> sendRequest(String requestBody, String authHeader) throws Exception {
+	public HttpResponse<String> sendRequest(String requestBody, String authHeader)
+			throws IOException, InterruptedException {
 		HttpRequest request = HttpRequest.newBuilder()
 				.uri(URI.create(configState.configData.openrouterUrl()))
 				.header(AUTHORIZATION_HEADER, authHeader)

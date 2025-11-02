@@ -1,11 +1,9 @@
 package io.github.magwas.coder.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.net.http.HttpResponse;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -13,6 +11,8 @@ import org.mockito.Mock;
 
 import io.github.magwas.coder.OpenRouterClientService;
 import io.github.magwas.coder.QuestionHandlerService;
+import io.github.magwas.coder.ResponseInfo;
+import io.github.magwas.coder.SystemWrapper;
 import io.github.magwas.coder.config.ApiKeyConfigService;
 import io.github.magwas.konveyor.testing.TestBase;
 
@@ -27,32 +27,30 @@ public class QuestionHandlerServiceTest extends TestBase implements MainLoopTest
 	@Mock
 	private ApiKeyConfigService apiKeyConfigService;
 
-	@BeforeEach
-	public void setUp() throws Throwable {
-		super.setUp();
-		when(apiKeyConfigService.apply()).thenReturn("Bearer valid-key");
-	}
+	@Mock
+	SystemWrapper system;
 
 	@Test
 	@DisplayName("Normal question processing calls OpenRouterClient")
 	void testNormalQuestionProcessing() throws Exception {
-		@SuppressWarnings("unchecked")
-		HttpResponse<String> mockResponse = mock(HttpResponse.class);
-		when(mockResponse.statusCode()).thenReturn(200);
-		when(mockResponse.body()).thenReturn("{}");
-		when(openRouterClientService.sendRequest(anyString(), anyString())).thenReturn(mockResponse);
+		assertEquals("Bearer valid-key", apiKeyConfigService.apply());
 		questionHandlerService.apply(CODER, ANY_QUESTION);
 		verify(openRouterClientService).sendRequest(anyString(), eq("Bearer valid-key"));
 	}
 
 	@Test
-	@DisplayName("Error during processing shows error message")
+	@DisplayName("If there is an error during processing message, statuscode is 500")
 	void testProcessingError() throws Exception {
-		when(openRouterClientService.sendRequest(anyString(), anyString()))
-				.thenThrow(new RuntimeException("Simulated error"));
+		given(ERROR_STATE);
+		ResponseInfo result = questionHandlerService.apply(CODER, ANY_QUESTION);
+		assertEquals(500, result.statusCode());
+	}
 
-		questionHandlerService.apply(CODER, ANY_QUESTION);
-
-		verify(SystemWrapperStub.printlnMock).accept(ERROR_PREFIX + "Simulated error");
+	@Test
+	@DisplayName("If there is an error during processing message, reason is the exception message")
+	void testProcessingErrorMessage() throws Exception {
+		given(ERROR_STATE);
+		ResponseInfo result = questionHandlerService.apply(CODER, ANY_QUESTION);
+		assertEquals("Simulated error", result.reasoning());
 	}
 }

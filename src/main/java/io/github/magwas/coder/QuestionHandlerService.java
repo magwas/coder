@@ -1,9 +1,12 @@
 package io.github.magwas.coder;
 
+import java.io.IOException;
 import java.net.http.HttpResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.github.magwas.coder.config.ApiKeyConfigService;
 import io.github.magwas.coder.conversation.ConversationState;
@@ -32,13 +35,12 @@ public class QuestionHandlerService implements ErrorMessages, UIConstants {
 	TimeWrapper timeDependency;
 
 	@Autowired
-	OpenRouterResponseService responseService;
+	ObjectMapperWrapper objectMapperWrapper;
 
-	public void apply(PersonalityData personality, StringBuilder question) {
+	public ResponseInfo apply(PersonalityData personality, StringBuilder question) {
 		try {
-			systemDependency.println.accept(GOT_INPUT);
+			systemDependency.println(GOT_INPUT);
 			conversationState.conversationHistory.add(new RequestMessageData("user", question.toString()));
-			question.setLength(0);
 			String requestBody = requestService.apply(personality, conversationState.conversationHistory);
 			fileWriterService.apply(FileConstants.REQUEST_DUMP_PATH, requestBody);
 
@@ -49,17 +51,19 @@ public class QuestionHandlerService implements ErrorMessages, UIConstants {
 			long endTime = timeDependency.currentTimeMillis();
 			long duration = endTime - startTime;
 
-			fileWriterService.apply(FileConstants.RESPONSE_DUMP_PATH, response.body());
-
 			if (response.statusCode() == 200) {
-				String result = responseService.apply(response.body(), duration);
-				conversationState.conversationHistory.add(new RequestMessageData("assistant", result));
-				systemDependency.println.accept(result);
+				String responseBody = response.body();
+				ObjectMapper mapper = objectMapperWrapper.objectMapper;
+				OpenRouterResponseData aiResponse = mapper.readValue(responseBody, OpenRouterResponseData.class);
+				ChoiceData choice = aiResponse.choices()[0];
+				MessageData message = choice.message();
+				return new ResponseInfo(
+						duration, response.statusCode(), message.reasoning(), message.content(), aiResponse.usage());
 			} else {
-				systemDependency.println.accept(String.format(ERROR_TEMPLATE, response.statusCode(), response.body()));
+				return new ResponseInfo(duration, response.statusCode(), response.body(), null, null);
 			}
-		} catch (Exception e) {
-			systemDependency.println.accept(ERROR_PREFIX + e.getMessage());
+		} catch (IOException | InterruptedException e) {
+			return new ResponseInfo(0, 500, e.getMessage(), null, null);
 		}
 	}
 }

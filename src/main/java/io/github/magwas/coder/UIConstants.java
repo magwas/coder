@@ -14,4 +14,10 @@ public interface UIConstants {
 	String INSTRUCTIONS_LOADED = "LOADED";
 	String INSTRUCTIONS_MISSING = "NOT FOUND";
 	String CURRENT_CODE_SECTION = "\nCurrent code:\n";
+	String BAD_XML_PROMPT = """
+					Your response as an AI was not a proper XML:
+					{0}
+
+					Try again.
+					""";
 }

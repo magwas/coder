@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 import io.github.magwas.coder.PersonalityService;
 import io.github.magwas.konveyor.testing.TestBase;
 
-public class PersonalityServiceStub implements PersonalityServiceTestData {
+public class PersonalityServiceStub implements PersonalityTestData {
 	public static PersonalityService stub() {
 		PersonalityService mock = mock(PersonalityService.class);
 		when(mock.apply(anyString())).thenAnswer(invocation -> {
@@ -15,7 +15,7 @@ public class PersonalityServiceStub implements PersonalityServiceTestData {
 				throw new IllegalArgumentException("Personality not found: " + personalityName);
 			}
 			if (DEFAULT_PERSONALITY_NAME.equals(personalityName)) {
-				return DEFAULT_PERSONALITY;
+				return CODER;
 			}
 			throw new IllegalArgumentException("Personality not found: " + personalityName);
 		});

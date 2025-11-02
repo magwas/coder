@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
 @Service
-public class XMLFileWriterService {
+public class XMLFileWriterService implements ErrorMessages, FormattingConstants {
 	@Autowired
 	FileWriterService fileWriterService;
 
@@ -22,7 +22,10 @@ public class XMLFileWriterService {
 	@Autowired
 	DirectoryWrapper directory;
 
-	public ProcessedFilesData apply(String xmlContent) throws ParserConfigurationException, IOException, SAXException {
+	@Autowired
+	SystemWrapper system;
+
+	public void apply(String xmlContent) throws ParserConfigurationException, IOException, SAXException {
 		Path currentDir = directory.getCurrentDir();
 		List<String> modifiedFiles = new ArrayList<>();
 		List<String> deletedFiles = new ArrayList<>();
@@ -41,7 +44,16 @@ public class XMLFileWriterService {
 			deletedFiles.add(file.fileName());
 		}
 
-		return new ProcessedFilesData(modifiedFiles, deletedFiles);
+		StringBuilder sb = new StringBuilder();
+		if (!modifiedFiles.isEmpty()) {
+			sb.append(MODIFIED_FILES_HEADER);
+			modifiedFiles.forEach(f -> sb.append("- ").append(f).append("\n"));
+		}
+		if (!deletedFiles.isEmpty()) {
+			sb.append(DELETED_FILES_HEADER);
+			deletedFiles.forEach(f -> sb.append("- ").append(f).append("\n"));
+		}
+		system.println(sb.toString());
 	}
 
 	private void validatePath(Path path, Path currentDir) {
