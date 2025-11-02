@@ -71,12 +71,29 @@ public class MainLoopService implements ErrorMessages, UIConstants, CommandConst
 				case CMD_CLEAR -> handleClear(personality);
 				case CMD_HISTORY -> handleHistory();
 				case CMD_INSTRUCTIONS -> handleInstructions();
+				case CMD_PERSONALITY -> {
+					if (commandLine.length > 1) {
+						handlePersonality(commandLine[1]);
+					} else {
+						systemDependency.println(PERSONALITY_USAGE);
+					}
+				}
 				case MULTILINE_END -> askAi(personality, input);
 				default -> handleLine(input, line);
 			}
 		}
 		systemDependency.println(GOODBYE_MESSAGE);
 		systemDependency.exit(0);
+	}
+
+	private void handlePersonality(String name) {
+		try {
+			PersonalityData newPersonality = personalityService.apply(name);
+			conversationSetupService.apply(newPersonality);
+			systemDependency.println(String.format(PERSONALITY_CHANGED, name));
+		} catch (IllegalArgumentException e) {
+			systemDependency.println(String.format(PERSONALITY_NOT_FOUND, name));
+		}
 	}
 
 	private void askAi(PersonalityData personality, StringBuilder input) {

@@ -20,4 +20,6 @@ public interface UIConstants {
 
 					Try again.
 					""";
+	String PERSONALITY_CHANGED = "Personality changed to: %s";
+	String PERSONALITY_USAGE = "Usage: /personality <name>";
 }
