@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.github.magwas.coder.ErrorMessages;
-import io.github.magwas.coder.ObjectMapperComponent;
+import io.github.magwas.coder.ObjectMapperWrapper;
 
 @Service
 public class ConfigLoadService {
@@ -18,13 +18,13 @@ public class ConfigLoadService {
 	private ConfigState configState;
 
 	@Autowired
-	private ObjectMapperComponent objectMapperComponent;
+	private ObjectMapperWrapper objectMapperWrapper;
 
 	public Void apply() throws IOException {
 		Path configFile = Path.of(System.getProperty("user.home"), ".coder", "coder.conf");
 		if (Files.exists(configFile)) {
 			String content = Files.readString(configFile);
-			ObjectMapper mapper = objectMapperComponent.getObjectMapper();
+			ObjectMapper mapper = objectMapperWrapper.objectMapper;
 			configState.configData = mapper.readValue(content, ConfigData.class);
 		} else {
 			throw new IOException(String.format(ErrorMessages.CONFIG_FILE_NOT_FOUND, configFile));

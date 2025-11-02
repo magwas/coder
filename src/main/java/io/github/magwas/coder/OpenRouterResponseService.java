@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class OpenRouterResponseService implements ErrorMessages, FormattingConstants {
 	@Autowired
-	private ObjectMapperComponent objectMapperComponent;
+	private ObjectMapperWrapper objectMapperWrapper;
 
 	@Autowired
 	private XMLFileWriterService xmlFileWriterService;
@@ -23,7 +23,7 @@ public class OpenRouterResponseService implements ErrorMessages, FormattingConst
 
 	public String apply(String responseBody, long durationMs)
 			throws IOException, ParserConfigurationException, SAXException {
-		ObjectMapper mapper = objectMapperComponent.getObjectMapper();
+		ObjectMapper mapper = objectMapperWrapper.objectMapper;
 		OpenRouterResponseData response = mapper.readValue(responseBody, OpenRouterResponseData.class);
 		StringBuilder result = new StringBuilder();
 

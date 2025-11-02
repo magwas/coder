@@ -8,15 +8,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 @Service
 public class OpenRouterRequestService {
 	@Autowired
-	private ObjectMapperComponent objectMapperComponent;
+	private ObjectMapperWrapper objectMapperWrapper;
 
 	@Autowired
 	private PersonalityService personalityService;
 
 	public String apply(String personalityName, RequestMessageData[] messages) throws JsonProcessingException {
 		PersonalityData personality = personalityService.apply(personalityName);
-		return objectMapperComponent
-				.getObjectMapper()
-				.writeValueAsString(new RequestDataData(personality.modelId(), messages, new ReasoningData(true)));
+		return objectMapperWrapper.objectMapper.writeValueAsString(
+				new RequestDataData(personality.modelId(), messages, new ReasoningData(true)));
 	}
 }

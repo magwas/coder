@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 @Component
-public class ObjectMapperComponent {
-	public ObjectMapper getObjectMapper() {
-		return JsonMapper.builder().build();
+public class ObjectMapperWrapper {
+	public final ObjectMapper objectMapper;
+
+	public ObjectMapperWrapper() {
+		this.objectMapper = JsonMapper.builder().build();
 	}
 }
