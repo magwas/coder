@@ -5,6 +5,7 @@ public record PersonalityData(
 		String modelId,
 		String instructionsFile,
 		Boolean showReasoning,
+		Boolean doReasoning,
 		Boolean showContent,
 		Boolean writeXML,
 		String testCommand,

@@ -8,6 +8,7 @@ public interface PersonalityTestData extends PersonalityServiceTestData {
 			DEFAULT_MODEL_ID,
 			DEFAULT_INSTRUCTIONS_FILE,
 			true,
+			true,
 			false,
 			true,
 			"mvn test",

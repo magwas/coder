@@ -13,7 +13,7 @@ public class OpenRouterRequestService {
 	ObjectMapperWrapper objectMapperWrapper;
 
 	public String apply(PersonalityData personality, List<RequestMessageData> messages) throws JsonProcessingException {
-		return objectMapperWrapper.objectMapper.writeValueAsString(
-				new OpenRouterRequestData(personality.modelId(), messages, new ReasoningData(true)));
+		return objectMapperWrapper.objectMapper.writeValueAsString(new OpenRouterRequestData(
+				personality.modelId(), messages, new ReasoningData(personality.doReasoning())));
 	}
 }
