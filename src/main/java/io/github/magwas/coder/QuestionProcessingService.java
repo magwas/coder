@@ -29,6 +29,9 @@ public class QuestionProcessingService implements UIConstants, FileConstants, Er
 			if (personality.showReasoning()) {
 				systemDependency.println(result.reasoning());
 			}
+            if(personality.showContent()) {
+                systemDependency.println(result.content());
+            }
 		} else {
 			systemDependency.println(String.format(ERROR_TEMPLATE, result.statusCode(), result.reasoning()));
 		}
