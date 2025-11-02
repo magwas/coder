@@ -4,5 +4,13 @@ import io.github.magwas.coder.PersonalityData;
 
 public interface PersonalityTestData extends PersonalityServiceTestData {
 	PersonalityData CODER = new PersonalityData(
-			DEFAULT_PERSONALITY_NAME, DEFAULT_MODEL_ID, DEFAULT_INSTRUCTIONS_FILE, true, false, true, "mvn test", 3);
+			DEFAULT_PERSONALITY_NAME,
+			DEFAULT_MODEL_ID,
+			DEFAULT_INSTRUCTIONS_FILE,
+			true,
+			false,
+			true,
+			"mvn test",
+			3,
+			true);
 }

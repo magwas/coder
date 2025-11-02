@@ -8,4 +8,5 @@ public record PersonalityData(
 		Boolean showContent,
 		Boolean writeXML,
 		String testCommand,
-		Integer testRetries) {}
+		Integer testRetries,
+		Boolean addReply) {}

@@ -32,6 +32,9 @@ public class QuestionProcessingService implements UIConstants, FileConstants, Er
 			if (personality.showContent()) {
 				systemDependency.println(result.content());
 			}
+			if (Boolean.TRUE.equals(personality.addReply())) {
+				conversationState.conversationHistory.add(new RequestMessageData("assistant", result.content()));
+			}
 		} else {
 			systemDependency.println(String.format(ERROR_TEMPLATE, result.statusCode(), result.reasoning()));
 		}

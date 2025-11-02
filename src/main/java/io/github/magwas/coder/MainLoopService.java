@@ -129,7 +129,6 @@ public class MainLoopService implements ErrorMessages, UIConstants, CommandConst
 				}
 
 				if (!xmlSuccess) break;
-				conversationSetupService.apply(personality);
 
 				if (personality.testCommand() != null
 						&& !personality.testCommand().isEmpty()) {
@@ -137,6 +136,7 @@ public class MainLoopService implements ErrorMessages, UIConstants, CommandConst
 					if (testOutput.isEmpty()) {
 						break;
 					} else {
+						conversationSetupService.apply(personality);
 						systemDependency.println(testOutput);
 						input.append("\n").append(testOutput);
 						result = questionProcessingService.apply(personality, input);
