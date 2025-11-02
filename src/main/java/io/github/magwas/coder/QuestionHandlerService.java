@@ -53,6 +53,7 @@ public class QuestionHandlerService implements ErrorMessages, UIConstants {
 
 			if (response.statusCode() == 200) {
 				String responseBody = response.body();
+				fileWriterService.apply(FileConstants.RESPONSE_DUMP_PATH, responseBody);
 				ObjectMapper mapper = objectMapperWrapper.objectMapper;
 				OpenRouterResponseData aiResponse = mapper.readValue(responseBody, OpenRouterResponseData.class);
 				ChoiceData choice = aiResponse.choices()[0];
@@ -60,10 +61,10 @@ public class QuestionHandlerService implements ErrorMessages, UIConstants {
 				return new ResponseInfo(
 						duration, response.statusCode(), message.reasoning(), message.content(), aiResponse.usage());
 			} else {
-				return new ResponseInfo(duration, response.statusCode(), response.body(), null, null);
+				return new ResponseInfo(duration, response.statusCode(), response.body(), response.body(), null);
 			}
 		} catch (IOException | InterruptedException e) {
-			return new ResponseInfo(0, 500, e.getMessage(), null, null);
+			return new ResponseInfo(0, 500, e.getMessage(), e.getMessage(), null);
 		}
 	}
 }
