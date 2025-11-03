@@ -17,5 +17,6 @@ public interface PersonalityTestData extends PersonalityServiceTestData {
 			3,
 			true,
 			true,
-			true);
+			true,
+			"OpenRouter AI Client with Spring Boot\nConversation history maintained across requests\nCommands: '/clear', '/exit', '/history', '/instructions'\nEnter multiline input ending with '.'");
 }

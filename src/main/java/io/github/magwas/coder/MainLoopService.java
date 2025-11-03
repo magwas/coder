@@ -49,10 +49,10 @@ public class MainLoopService implements ErrorMessages, UIConstants, CommandConst
 	ConfigState config;
 
 	@Autowired
-	QuestionProcessingService questionProcessingService;
+	RunCommandService runCommandService;
 
 	@Autowired
-	RunCommandService runCommandService;
+	QuestionProcessingService questionProcessingService;
 
 	public void apply() throws IOException {
 		configLoadService.apply();
@@ -63,7 +63,7 @@ public class MainLoopService implements ErrorMessages, UIConstants, CommandConst
 		PersonalityData personality = personalityService.apply(defaultName);
 
 		LineReader lineReader = lineReaderDependency.reader;
-		systemDependency.println(PROMPT_MESSAGE);
+		systemDependency.println(personality.prompt());
 		conversationSetupService.apply(personality);
 
 		StringBuilder input = new StringBuilder();
@@ -95,7 +95,7 @@ public class MainLoopService implements ErrorMessages, UIConstants, CommandConst
 			PersonalityData newPersonality = personalityService.apply(name);
 			conversationSetupService.apply(newPersonality);
 			systemDependency.println(String.format(PERSONALITY_CHANGED, name));
-			systemDependency.println("new personality:" + newPersonality);
+			systemDependency.println(newPersonality.prompt());
 			return newPersonality;
 		} catch (IllegalArgumentException e) {
 			systemDependency.println(String.format(PERSONALITY_NOT_FOUND, name));

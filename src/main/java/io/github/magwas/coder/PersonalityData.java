@@ -14,4 +14,5 @@ public record PersonalityData(
 		Integer testRetries,
 		Boolean addReply,
 		Boolean includeSource,
-		Boolean showUsage) {}
+		Boolean showUsage,
+		String prompt) {}
