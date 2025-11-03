@@ -30,7 +30,7 @@ public class OpenRouterClientServiceTest extends TestBase {
 	@Test
 	@DisplayName("Content-Type header is set to application/json")
 	void testContentTypeHeader() throws Exception {
-		openRouterClientService.sendRequest("{}", "Bearer key");
+		openRouterClientService.apply("{}", "Bearer key");
 
 		ArgumentCaptor<HttpRequest> requestCaptor = ArgumentCaptor.forClass(HttpRequest.class);
 		verify(httpClientDependency.httpClient).send(requestCaptor.capture(), any());

@@ -22,7 +22,7 @@ public class OpenRouterClientServiceStub implements MainLoopTestData, OpenRouter
 					return response;
 				})
 				.when(mock)
-				.sendRequest(anyString(), anyString());
+				.apply(anyString(), anyString());
 
 		return mock;
 	}

@@ -18,8 +18,7 @@ public class OpenRouterClientService implements HTTPConstants {
 	@Autowired
 	ConfigState configState;
 
-	public HttpResponse<String> sendRequest(String requestBody, String authHeader)
-			throws IOException, InterruptedException {
+	public HttpResponse<String> apply(String requestBody, String authHeader) throws IOException, InterruptedException {
 		HttpRequest request = HttpRequest.newBuilder()
 				.uri(URI.create(configState.configData.openrouterUrl()))
 				.header(AUTHORIZATION_HEADER, authHeader)

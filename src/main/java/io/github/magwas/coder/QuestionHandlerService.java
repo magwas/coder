@@ -47,7 +47,7 @@ public class QuestionHandlerService implements ErrorMessages, UIConstants {
 			String authHeader = apiKeyConfigService.apply();
 
 			long startTime = timeDependency.currentTimeMillis();
-			HttpResponse<String> response = openRouterClientService.sendRequest(requestBody, authHeader);
+			HttpResponse<String> response = openRouterClientService.apply(requestBody, authHeader);
 			long endTime = timeDependency.currentTimeMillis();
 			long duration = endTime - startTime;
 

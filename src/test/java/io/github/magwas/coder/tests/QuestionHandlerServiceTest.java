@@ -35,7 +35,7 @@ public class QuestionHandlerServiceTest extends TestBase implements MainLoopTest
 	void testNormalQuestionProcessing() throws Exception {
 		assertEquals("Bearer valid-key", apiKeyConfigService.apply());
 		questionHandlerService.apply(CODER, ANY_QUESTION);
-		verify(openRouterClientService).sendRequest(anyString(), eq("Bearer valid-key"));
+		verify(openRouterClientService).apply(anyString(), eq("Bearer valid-key"));
 	}
 
 	@Test
