@@ -8,7 +8,7 @@ import io.github.magwas.coder.config.ConfigState;
 public class ConfigStateStub {
 	public static ConfigState stub() {
 		ConfigState mock = mock(ConfigState.class);
-		mock.configData = new ConfigData("key", "http://test.url", 3, null);
+		mock.configData = new ConfigData("key", "http://test.url", 3, null, "");
 		return mock;
 	}
 }

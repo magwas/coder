@@ -56,7 +56,11 @@ public class MainLoopService implements ErrorMessages, UIConstants, CommandConst
 
 	public void apply() throws IOException {
 		configLoadService.apply();
-		PersonalityData personality = personalityService.apply("coder");
+		String defaultName = config.configData.defaultPersonality() != null
+						&& !config.configData.defaultPersonality().isEmpty()
+				? config.configData.defaultPersonality()
+				: "coder";
+		PersonalityData personality = personalityService.apply(defaultName);
 
 		LineReader lineReader = lineReaderDependency.reader;
 		systemDependency.println(PROMPT_MESSAGE);
