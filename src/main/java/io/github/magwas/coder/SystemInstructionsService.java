@@ -9,13 +9,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class SystemInstructionsService {
 	public String apply(PersonalityData personality) {
-		try {
-			Path instructionsFile = Path.of(System.getProperty("user.home"), ".coder", personality.instructionsFile());
-			return Files.exists(instructionsFile)
-					? Files.readString(instructionsFile).trim()
-					: "";
-		} catch (IOException e) {
-			return "";
+		StringBuilder sb = new StringBuilder();
+		for (String file : personality.instructionsFile()) {
+			try {
+				Path instructionsFile = Path.of(System.getProperty("user.home"), ".coder", file);
+				if (Files.exists(instructionsFile)) {
+					sb.append(Files.readString(instructionsFile)).append("\n");
+				}
+			} catch (IOException e) {
+				// Ignore individual file errors
+			}
 		}
+		return sb.toString().trim();
 	}
 }

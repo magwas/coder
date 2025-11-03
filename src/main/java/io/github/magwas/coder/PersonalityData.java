@@ -1,9 +1,11 @@
 package io.github.magwas.coder;
 
+import java.util.List;
+
 public record PersonalityData(
 		String name,
 		String modelId,
-		String instructionsFile,
+		List<String> instructionsFile,
 		Boolean showReasoning,
 		Boolean doReasoning,
 		Boolean showContent,
