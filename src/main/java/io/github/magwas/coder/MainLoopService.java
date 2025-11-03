@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import io.github.magwas.coder.config.ConfigLoadService;
 import io.github.magwas.coder.config.ConfigState;
 import io.github.magwas.coder.conversation.ConversationSetupService;
-import io.github.magwas.coder.conversation.ConversationState;
 
 @Service
 public class MainLoopService implements UIConstants {
@@ -24,9 +23,6 @@ public class MainLoopService implements UIConstants {
 
 	@Autowired
 	ConversationSetupService conversationSetupService;
-
-	@Autowired
-	ConversationState conversationState;
 
 	@Autowired
 	LineReaderWrapper lineReaderDependency;

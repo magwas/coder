@@ -1,9 +1,12 @@
 package io.github.magwas.coder;
 
+import java.text.MessageFormat;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.github.magwas.coder.config.ConfigState;
+import io.github.magwas.coder.conversation.ConversationSetupService;
 
 @Service
 public class XMLWritingOrchestrationService implements ErrorMessages, UIConstants {
@@ -20,6 +23,12 @@ public class XMLWritingOrchestrationService implements ErrorMessages, UIConstant
 	@Autowired
 	SystemWrapper systemDependency;
 
+	@Autowired
+	QuestionProcessingService questionProcessingService;
+
+	@Autowired
+	ConversationSetupService conversationSetupService;
+
 	public void apply(PersonalityData personality, StringBuilder input, ResponseInfo result) {
 		if (!personality.writeXML()) return;
 
@@ -35,21 +44,18 @@ public class XMLWritingOrchestrationService implements ErrorMessages, UIConstant
 		try {
 			xmlFileWriter.apply(result.content());
 			if (personality.testCommand() != null) {
-				return verifyWithTestCommand(personality, result);
+				for (int i = 0; i <= personality.testRetries(); i++) {
+					String testTesult = runCommandService.apply(personality.testCommand());
+					if (!testTesult.isEmpty()) {
+						conversationSetupService.apply(personality);
+						result = questionProcessingService.apply(personality, new StringBuilder(testTesult));
+					}
+				}
 			}
 			return true;
 		} catch (Exception e) {
-			systemDependency.println(String.format(BAD_XML_PROMPT, e.getMessage()));
+			systemDependency.println(MessageFormat.format(BAD_XML_PROMPT, e.getMessage()));
 			return false;
 		}
-	}
-
-	private boolean verifyWithTestCommand(PersonalityData personality, ResponseInfo result) {
-		String testOutput = runCommandService.apply(personality.testCommand());
-		if (!testOutput.isEmpty()) {
-			systemDependency.println(testOutput);
-			return false;
-		}
-		return true;
 	}
 }
