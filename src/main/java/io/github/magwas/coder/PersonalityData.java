@@ -11,4 +11,5 @@ public record PersonalityData(
 		String testCommand,
 		Integer testRetries,
 		Boolean addReply,
-		Boolean includeSource) {}
+		Boolean includeSource,
+		Boolean showUsage) {}

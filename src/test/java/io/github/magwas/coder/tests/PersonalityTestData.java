@@ -14,5 +14,6 @@ public interface PersonalityTestData extends PersonalityServiceTestData {
 			"mvn test",
 			3,
 			true,
+			true,
 			true);
 }

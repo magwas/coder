@@ -21,7 +21,7 @@ public class QuestionProcessingService implements UIConstants, FileConstants, Er
 
 	public ResponseInfo apply(PersonalityData personality, StringBuilder input) {
 		ResponseInfo result = questionHandlerService.apply(personality, input);
-		printUsage(result);
+		printUsage(personality, result);
 		fileWriterService.apply(AI_OUTPUT_PATH, result.content());
 
 		if (result.statusCode() == 200) {
@@ -42,23 +42,26 @@ public class QuestionProcessingService implements UIConstants, FileConstants, Er
 		return result;
 	}
 
-	private void printUsage(ResponseInfo result) {
-		StringBuilder usage = new StringBuilder();
-		if (result.usage() != null) {
-			usage.append("\nToken usage: ")
-					.append(result.usage().prompt_tokens())
-					.append(" input, ")
-					.append(result.usage().completion_tokens())
-					.append(" output");
+	private void printUsage(PersonalityData personality, ResponseInfo result) {
+		if (Boolean.TRUE.equals(personality.showUsage())) {
+			StringBuilder usage = new StringBuilder();
+			if (result.usage() != null) {
+				usage.append("\nToken usage: ")
+						.append(result.usage().prompt_tokens())
+						.append(" input, ")
+						.append(result.usage().completion_tokens())
+						.append(" output");
 
-			int totalTokens = result.usage().prompt_tokens() + result.usage().completion_tokens();
-			long duration = result.duration();
-			usage.append(String.format("\nRequest time: %d ms", duration));
-			if (duration > 0) {
-				double tps = totalTokens * 1000.0 / duration;
-				usage.append(String.format("\nTokens per second: %.2f", tps));
+				int totalTokens =
+						result.usage().prompt_tokens() + result.usage().completion_tokens();
+				long duration = result.duration();
+				usage.append(String.format("\nRequest time: %d ms", duration));
+				if (duration > 0) {
+					double tps = totalTokens * 1000.0 / duration;
+					usage.append(String.format("\nTokens per second: %.2f", tps));
+				}
 			}
+			systemDependency.println(usage.toString());
 		}
-		systemDependency.println(usage.toString());
 	}
 }

@@ -14,11 +14,12 @@ public interface UIConstants {
 	String INSTRUCTIONS_LOADED = "LOADED";
 	String INSTRUCTIONS_MISSING = "NOT FOUND";
 	String CURRENT_CODE_SECTION = "\nCurrent code:\n";
-	String BAD_XML_PROMPT = """
+	String BAD_XML_PROMPT =
+			"""
 					Your response as an AI was not a proper XML:
 					{0}
 
-					Try again.
+					Try again. Make sure you emit the files needed, and your response is a proper xml.
 					""";
 	String PERSONALITY_CHANGED = "Personality changed to: %s";
 	String PERSONALITY_USAGE = "Usage: /personality <name>";
