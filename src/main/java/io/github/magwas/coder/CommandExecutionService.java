@@ -17,7 +17,7 @@ public class CommandExecutionService {
 		Process process = processBuilderWrapper
 				.getBuilder()
 				.command("sh", "-c", command)
-				.redirectErrorStream(true)
+				.redirectError(ProcessBuilder.Redirect.INHERIT)
 				.start();
 
 		process.waitFor();
