@@ -4,10 +4,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import io.github.magwas.coder.RequestMessageData;
+import io.github.magwas.coder.openrouter.RequestMessageData;
 
 @Component
 public class ConversationState {
-	public List<RequestMessageData> conversationHistory;
-	public String systemMessage;
+	public List<RequestMessageData> history;
 }

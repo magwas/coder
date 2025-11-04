@@ -7,8 +7,7 @@ import io.github.magwas.coder.conversation.ConversationState;
 public class ConversationStateStub {
 	public static ConversationState stub() {
 		ConversationState conversationState = new ConversationState();
-		conversationState.conversationHistory = new ArrayList<>();
-		conversationState.systemMessage = "";
+		conversationState.history = new ArrayList<>();
 		return conversationState;
 	}
 }

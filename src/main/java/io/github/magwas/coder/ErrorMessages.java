@@ -11,4 +11,5 @@ public interface ErrorMessages {
 	String PERSONALITY_NOT_FOUND = "Personality not found: %s";
 	String CONFIG_FILE_NOT_FOUND = "Config file not found: %s";
 	String COMMAND_EXECUTION_ERROR = "Command execution error: %s";
+	String SERVICE_NOT_FOUND = "Service not found: %s";
 }
