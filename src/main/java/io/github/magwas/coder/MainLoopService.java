@@ -1,86 +1,82 @@
 package io.github.magwas.coder;
 
-import org.jline.reader.LineReader;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.github.magwas.coder.command.*;
 import io.github.magwas.coder.config.ConfigLoadService;
-import io.github.magwas.coder.conversation.ConversationClearService;
-import io.github.magwas.coder.conversation.ConversationHasSystemInstructionsService;
-import io.github.magwas.coder.conversation.ConversationSetupService;
-import io.github.magwas.coder.conversation.ConversationSizeService;
+import io.github.magwas.coder.config.ConfigState;
+import io.github.magwas.coder.dependencies.LineReaderWrapper;
+import io.github.magwas.coder.dependencies.SystemWrapper;
 
 @Service
 public class MainLoopService implements UIConstants {
-	@Autowired
-	private OpenRouterClientService openRouterClientService;
 
 	@Autowired
-	private ConsoleInputService consoleInputService;
+	GoCommandService goCommand;
 
 	@Autowired
-	private ConversationClearService conversationClearService;
+	SystemWrapper systemDependency;
 
 	@Autowired
-	private ConversationSizeService conversationSizeService;
+	ClearCommandService clearCommand;
 
 	@Autowired
-	private ConversationHasSystemInstructionsService conversationHasSystemInstructionsService;
+	LineReaderWrapper lineReaderDependency;
 
 	@Autowired
-	private ConversationSetupService conversationSetupService;
+	ConfigLoadService configLoadService;
 
 	@Autowired
-	private LineReaderDependency lineReaderDependency;
+	ExitCommandService exitCommand;
 
 	@Autowired
-	private SystemDependency systemDependency;
+	ConfigState config;
 
 	@Autowired
-	private ConfigLoadService configLoadService;
+	PersonalityCommandService personalityCommand;
 
-	@Autowired
-	private PersonalityService personalityService;
-
-	@Autowired
-	private QuestionHandlerService questionHandlerService;
-
-	public Void apply() throws Exception {
+	public void apply() throws IOException {
 		configLoadService.apply();
-		PersonalityData personality = personalityService.apply("coder");
-
-		LineReader lineReader = lineReaderDependency.lineReader;
-		systemDependency.println.accept(PROMPT_MESSAGE);
-		conversationSetupService.apply(personality.name());
-
-		while (true) {
-			String userInput = consoleInputService.apply(lineReader);
-			if (userInput == null) break;
-			if (userInput.isEmpty()) continue;
-			systemDependency.println.accept(GOT_INPUT);
-			switch (userInput.toLowerCase()) {
-				case "/clear" -> handleClear();
-				case "/history" -> handleHistory();
-				case "/instructions" -> handleInstructions();
-				default -> questionHandlerService.apply(personality.name(), userInput);
+		String personalityName =
+				config.configData.defaultPersonality().isEmpty() ? "coder" : config.configData.defaultPersonality();
+		goCommand.apply(
+				new ProcessingContextData(200, "", Map.of("workflow", "initial", "personality", personalityName)),
+				List.of("go"));
+		boolean shouldExit = false;
+		StringBuilder input = new StringBuilder();
+		while (!shouldExit) {
+			String line = lineReaderDependency.reader.readLine(INPUT_PROMPT);
+			if (line == null) break;
+			List<String> args = List.of(line.split(" "));
+			ProcessingContextData ctxIn =
+					new ProcessingContextData(200, input.toString(), Map.of("personality", personalityName));
+			ProcessingContextData contextData;
+			switch (args.getFirst()) {
+				case CommandConstants.CMD_EXIT -> contextData = exitCommand.apply(ctxIn, args);
+				case CommandConstants.CMD_CLEAR -> contextData = clearCommand.apply(ctxIn, args);
+				case CommandConstants.CMD_PERSONALITY -> contextData = personalityCommand.apply(ctxIn, args);
+				case MULTILINE_END -> contextData = goCommand.apply(ctxIn, args);
+				default -> {
+					if (!input.isEmpty()) {
+						input.append("\n");
+					}
+					input.append(line);
+					contextData = new ProcessingContextData(200, "", Map.of());
+				}
 			}
+			if (contextData.meta().containsKey("exit")) shouldExit = true;
+			if (contextData.meta().containsKey("clearInput")) input.setLength(0);
+			if (contextData.status() / 100 != 2) systemDependency.println("EXIT STATUS: " + contextData.status());
+			if (!contextData.content().isEmpty()) systemDependency.println(contextData.content());
+			if (contextData.meta().containsKey("newPersonality"))
+				personalityName = contextData.meta().get("newPersonality");
 		}
-		systemDependency.println.accept(GOODBYE_MESSAGE);
-		systemDependency.exit.accept(0);
-		return null;
-	}
-
-	private void handleClear() {
-		conversationClearService.apply();
-		systemDependency.println.accept(CLEAR_CONFIRMATION);
-	}
-
-	private void handleHistory() {
-		systemDependency.println.accept(HISTORY_MESSAGE + conversationSizeService.apply());
-	}
-
-	private void handleInstructions() {
-		systemDependency.println.accept(INSTRUCTIONS_STATUS
-				+ (conversationHasSystemInstructionsService.apply() ? INSTRUCTIONS_LOADED : INSTRUCTIONS_MISSING));
+		systemDependency.println(GOODBYE_MESSAGE);
+		systemDependency.exit(0);
 	}
 }

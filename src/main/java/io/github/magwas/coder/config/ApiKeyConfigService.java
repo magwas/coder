@@ -8,7 +8,7 @@ import io.github.magwas.coder.ErrorMessages;
 @Service
 public class ApiKeyConfigService implements ErrorMessages {
 	@Autowired
-	private ConfigState configState;
+	ConfigState configState;
 
 	public String apply() {
 		if (configState.configData == null) {

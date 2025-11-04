@@ -9,5 +9,6 @@ public interface MainLoopTestData extends UIConstants {
 	String INSTRUCTIONS_COMMAND_STATE = "instructions";
 	String NORMAL_INPUT_STATE = "normal";
 	String ERROR_STATE = "error";
-	String ANY_QUESTION = "question";
+	String TEST_FAILURE_STATE = "test-failure";
+	StringBuilder ANY_QUESTION = new StringBuilder("question");
 }

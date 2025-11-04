@@ -13,9 +13,14 @@ public interface UIConstants {
 	String INSTRUCTIONS_STATUS = "System instructions: ";
 	String INSTRUCTIONS_LOADED = "LOADED";
 	String INSTRUCTIONS_MISSING = "NOT FOUND";
-	String SYSTEM_PROMPT =
-			"From now on, your answer should be a proper xml. Use a root element <root>. Files are in <file name=\"path/name.ext\"> tags. Make sure you escape < and &.\n"
-					+ "The answer should not contain anything else but xml.\n"
-					+ "By default you write programs in java 21.\n";
 	String CURRENT_CODE_SECTION = "\nCurrent code:\n";
+	String BAD_XML_PROMPT =
+			"""
+					Your response as an AI was not a proper XML:
+					{0}
+
+					Try again. Make sure you emit the files needed, and your response is a proper xml.
+					""";
+	String PERSONALITY_CHANGED = "Personality changed to: %s";
+	String PERSONALITY_USAGE = "Usage: /personality <name>";
 }
